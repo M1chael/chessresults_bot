@@ -6,4 +6,5 @@ gem 'telegram-bot-ruby'
 group :test do
   gem 'rspec'
   gem 'webmock'
+  gem 'byebug'
 end
