@@ -32,5 +32,14 @@ describe Bot, :logger, :telegram do
       expect(api).to receive(:send_message).twice
       bot.read(msg)
     end
+
+    it 'marks not finished tournaments' do
+      allow(bot).to receive(:search_players_on_site) { players }
+      allow(msg).to receive(:text) { 'some body' }
+      allow_today(Date.parse("2019/12/15"))
+      expect(api).to receive(:send_message).
+        with(hash_including(text: include(STRINGS[:not_finished_tournament] % players[1][:tournaments][0])))
+      bot.read(msg)
+    end
   end
 end

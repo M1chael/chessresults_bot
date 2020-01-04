@@ -35,4 +35,8 @@ module Helpers
     expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
     bot.read(msg)
   end
+
+  def allow_today(date)
+    allow(Date).to receive(:today).and_return(date)
+  end
 end
