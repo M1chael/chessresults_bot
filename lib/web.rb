@@ -30,8 +30,10 @@ module Web
       if number != 0
         @players << Player.new(fullname: cells[0].text, number: number, club: cells[3].text,
           fed: cells[4].text) if @players.none?{|player| player.number == number}
+        tournament_id = cells[5].xpath('a/@href').text[/tnr(\d+)\..+/, 1]
+        get_content(:Get, URI("http://chess-results.com/tnr#{tournament_id}.aspx"))
         @players[@players.find_index{|player| player.number == number}].add_tournament( 
-          {name: cells[5].text, finish_date: cells[6].text})
+          {name: @page.xpath('//*/h2')[0].text, finish_date: cells[6].text})
       end
     end
   end

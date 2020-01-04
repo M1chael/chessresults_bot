@@ -35,6 +35,7 @@ class Bot
       when '/find'
         send_message(text: STRINGS[:search_player])
       else
+        @telegram.api.send_chat_action(chat_id: @uid, action: :typing)
         search_players(message.text)
       end
     end
