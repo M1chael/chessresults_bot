@@ -8,18 +8,16 @@ describe Bot, :logger, :telegram do
   end
 
   describe '#read' do
-    it 'says hello' do 
-      allow(msg).to receive(:text) { '/start' }
-      expect(api).to receive(:send_message).with(chat_id: chat.id, text: STRINGS[:hello], 
-        parse_mode: 'HTML')
-      @bot.read(msg)
+    it 'says hello' do
+      expect_reply('/start', STRINGS[:hello])
     end
 
     it 'asks player name and surname' do
-      allow(msg).to receive(:text) { '/find' }
-      expect(api).to receive(:send_message).with(chat_id: chat.id, text: STRINGS[:search_player], 
-        parse_mode: 'HTML')
-      @bot.read(msg)      
+      expect_reply('/find', STRINGS[:search_player])
+    end
+
+    it 'says about error when there is less than 2 words' do
+      expect_reply('surname', STRINGS[:error])
     end
   end
 end

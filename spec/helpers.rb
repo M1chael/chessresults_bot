@@ -16,4 +16,10 @@ module Helpers
 	    with(:headers => {'User-Agent' => 'Telegram bot for the notifying about results: @chessresults_bot'}).
 	    to_return(File.read(File.join('test/pages/', file_name)))
   end
+
+  def expect_reply(request, reply)
+    allow(msg).to receive(:text) { request }
+    expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
+    @bot.read(msg)  
+  end
 end
