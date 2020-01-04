@@ -6,7 +6,6 @@ module Helpers
 
   let(:logger) { instance_double(Logger) }
   let(:telegram) { double(Telegram::Bot::Client) }
-  let(:message) { double(Telegram::Bot::Types::Message) }
   let(:chat) { double(Telegram::Bot::Types::Chat) }
   let(:api) { double }
   let(:msg) { double(Telegram::Bot::Types::Message) }

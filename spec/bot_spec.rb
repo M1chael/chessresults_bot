@@ -11,6 +11,10 @@ describe Bot, :logger, :telegram do
     bot.instance_variable_set(:@telegram, telegram)
     allow(player1).to receive(:to_hash).and_return(player1_hash)
     allow(player2).to receive(:to_hash).and_return(player2_hash)
+    [player1, player2].each do |player| 
+      allow(player).to receive(:tracked_by?).and_return(false)
+      allow(player).to receive(:number).and_return(1)
+    end
   end
 
   describe '#read' do
@@ -35,6 +39,23 @@ describe Bot, :logger, :telegram do
       allow(bot).to receive(:search_players_on_site) { players }
       allow(msg).to receive(:text) { 'some body' }
       expect(api).to receive(:send_message).twice
+      bot.read(msg)
+    end
+
+    it 'adds add-button for not tracked users' do
+      allow(bot).to receive(:search_players_on_site) { [player1] }
+      allow(msg).to receive(:text) { 'some body' }
+      expect(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+        with(text: 'Добавить в отслеживаемые', callback_data: 'add:1')
+      bot.read(msg)
+    end
+
+    it 'adds del-button for tracked users' do
+      allow(bot).to receive(:search_players_on_site) { [player1] }
+      allow(player1).to receive(:tracked_by?).and_return(true)
+      allow(msg).to receive(:text) { 'some body' }
+      expect(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+        with(text: 'Удалить из отслеживаемых', callback_data: 'del:1')
       bot.read(msg)
     end
   end

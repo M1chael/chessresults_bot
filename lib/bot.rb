@@ -45,7 +45,6 @@ class Bot
 
   def send_message(options)
     options[:chat_id] = @uid
-    options[:text] = options[:text]
     options[:parse_mode] = 'HTML'
     @telegram.api.send_message(options)
   end
@@ -61,9 +60,18 @@ class Bot
         send_message(text: STRINGS[:nobody] % player)
       else
         players.each do |player|
-          send_message(text: STRINGS[:player] % player.to_hash)
+          send_message(text: STRINGS[:player] % player.to_hash, reply_markup: markup(player))
         end
       end
     end
+  end
+
+  def markup(player)
+    actions = {add: 'Добавить в отслеживаемые', del: 'Удалить из отслеживаемых'}
+    action = player.tracked_by?(@uid) ? :del : :add
+    kb = [[Telegram::Bot::Types::InlineKeyboardButton.new(text: actions[action], 
+      callback_data: "#{action}:#{player.number}")]]
+
+    return Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)    
   end
 end
