@@ -27,6 +27,8 @@ class Bot
       case message.text
       when '/start'
         send_message(text: STRINGS[:hello])
+      when '/find'
+        send_message(text: STRINGS[:search_player])
       end
     end
   end
