@@ -4,6 +4,8 @@ require_relative 'strings'
 require_relative 'web'
 
 class Bot
+  include Web
+
   def initialize(options)
     @token = options[:token]
     @logger = Logger.new(options[:log], 'monthly')
@@ -39,16 +41,27 @@ class Bot
   private
 
   def send_message(options)
-    # params = Hash.new
     options[:chat_id] = @uid
     options[:text] = options[:text]
     options[:parse_mode] = 'HTML'
     @telegram.api.send_message(options)
   end
 
-  def search_players(player)
-    name, surname = player.strip.split(' ')
-    send_message(text: STRINGS[:error])
-    # players = Web::search_players(name: name, surname: surname)
+  def search_players(data)
+    player = {}
+    player[:name], player[:surname] = data.strip.split(' ')
+    # name, surname = player.strip.split(' ')
+    if player[:name].nil? || player[:surname].nil?
+      send_message(text: STRINGS[:error])
+    else
+      players = search_players_on_site(player)
+      if players.size == 0
+        send_message(text: STRINGS[:nobody] % player)
+      else
+        players.each do |player|
+      
+        end
+      end
+    end
   end
 end

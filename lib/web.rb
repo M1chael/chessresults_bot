@@ -4,7 +4,7 @@ require 'net/http'
 require 'open-uri'
 
 module Web
-  def search_players(player)
+  def search_players_on_site(player)
     load_params
     get_players(player)
     return @players

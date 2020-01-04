@@ -20,6 +20,6 @@ module Helpers
   def expect_reply(request, reply)
     allow(msg).to receive(:text) { request }
     expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
-    @bot.read(msg)  
+    bot.read(msg)  
   end
 end
