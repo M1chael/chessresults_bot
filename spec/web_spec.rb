@@ -11,7 +11,7 @@ describe Web do
     end
 
     it 'returns array of 17 players' do
-      expect(search_players_on_site(name: 'иван', surname: 'иванов').size).to eq(17)
+      expect(search_players_on_site(Player.new(name: 'иван', surname: 'иванов')).size).to eq(17)
     end
   end
 end

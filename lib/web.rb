@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'uri'
 require 'net/http'
 require 'open-uri'
+require_relative 'player'
 
 module Web
   def search_players_on_site(player)
@@ -21,19 +22,16 @@ module Web
 
   def get_players(player)
     @players = []
-    @params['_ctl0:P1:txt_vorname'] = player[:name]
-    @params['_ctl0:P1:txt_nachname'] = player[:surname]
+    @params['_ctl0:P1:txt_vorname'] = player.name
+    @params['_ctl0:P1:txt_nachname'] = player.surname
     get_content(:Post, URI(CONFIG[:search_form][:URL])).xpath('//*[@class="CRs2"]/tr').each do |tr|
       cells = tr.xpath('td')
       number = cells[1].text.to_i
       if number != 0
-        if @players.none?{|player| player[:number] == number}
-          @players << {name: cells[0].text, number: number, club: cells[3].text, 
-            fed: cells[4].text, tournaments: [{name: cells[5].text, finish_date: cells[6].text}]}
-        else
-          @players[@players.find_index{|player| player[:number] == number}][:tournaments] << 
-            {name: cells[5].text, finish_date: cells[6].text}
-        end
+        @players << Player.new(fullname: cells[0].text, number: number, club: cells[3].text,
+          fed: cells[4].text) if @players.none?{|player| player.number == number}
+        @players[@players.find_index{|player| player.number == number}].add_tournament( 
+          {name: cells[5].text, finish_date: cells[6].text})
       end
     end
   end

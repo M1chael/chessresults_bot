@@ -3,9 +3,14 @@ require 'spec_helper'
 
 describe Bot, :logger, :telegram do
   let(:bot) { Bot.new(token: 'test_token', log: 'path/to/log') }
+  let(:player1) { double }
+  let(:player2) { double }
+  let(:players) { [player1, player2] }
 
   before(:example) do
     bot.instance_variable_set(:@telegram, telegram)
+    allow(player1).to receive(:to_hash).and_return(player1_hash)
+    allow(player2).to receive(:to_hash).and_return(player2_hash)
   end
 
   describe '#read' do
@@ -30,15 +35,6 @@ describe Bot, :logger, :telegram do
       allow(bot).to receive(:search_players_on_site) { players }
       allow(msg).to receive(:text) { 'some body' }
       expect(api).to receive(:send_message).twice
-      bot.read(msg)
-    end
-
-    it 'marks not finished tournaments' do
-      allow(bot).to receive(:search_players_on_site) { players }
-      allow(msg).to receive(:text) { 'some body' }
-      allow_today(Date.parse("2019/12/15"))
-      expect(api).to receive(:send_message).
-        with(hash_including(text: include(STRINGS[:not_finished_tournament] % players[1][:tournaments][0])))
       bot.read(msg)
     end
   end

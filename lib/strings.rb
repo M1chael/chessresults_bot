@@ -25,7 +25,7 @@ STRINGS[:nobody] = <<~NB
 NB
 
 STRINGS[:player] = <<~PLAYER
-  👤 [%{fed}] <b>%{name}</b>
+  👤 [%{fed}] <b>%{fullname}</b>
          Индивидуальный номер: %{number}
          Клуб/город: %{club}
 
