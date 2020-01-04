@@ -10,6 +10,19 @@ module Helpers
   let(:chat) { double(Telegram::Bot::Types::Chat) }
   let(:api) { double }
   let(:msg) { double(Telegram::Bot::Types::Message) }
+  let(:players) {[{:name=>"Иванов Иван",
+    :number=>234,
+    :club=>"Mount Sent Patrick Academy",
+    :fed=>"IND",
+    :tournaments=>
+      [{:name=>"U-14 (Boys) Pune DSO Organise", :finish_date=>"2019/08/22"}]},
+    {:name=>"Иванов Иван",
+    :number=>428,
+    :club=>"Варна",
+    :fed=>"BUL",
+    :tournaments=>
+      [{:name=>"Шах в Двореца 2200 - 3 турнир", :finish_date=>"2019/12/15"},
+      {:name=>"Шах в Двореца 2200 - 2 турнир", :finish_date=>"2019/11/10"}]}]}
 
   def stub_web(type, request, file_name)
 	  stub_request(type, request).
@@ -20,6 +33,6 @@ module Helpers
   def expect_reply(request, reply)
     allow(msg).to receive(:text) { request }
     expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
-    bot.read(msg)  
+    bot.read(msg)
   end
 end

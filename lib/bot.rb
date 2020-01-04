@@ -1,5 +1,6 @@
 require 'telegram/bot'
 require 'logger'
+require 'date'
 require_relative 'strings'
 require_relative 'web'
 
@@ -50,7 +51,6 @@ class Bot
   def search_players(data)
     player = {}
     player[:name], player[:surname] = data.strip.split(' ')
-    # name, surname = player.strip.split(' ')
     if player[:name].nil? || player[:surname].nil?
       send_message(text: STRINGS[:error])
     else
@@ -59,9 +59,22 @@ class Bot
         send_message(text: STRINGS[:nobody] % player)
       else
         players.each do |player|
-      
+          player[:tournaments] = list_tournaments(player[:tournaments])
+          send_message(text: STRINGS[:player] % player)
         end
       end
     end
+  end
+
+  def list_tournaments(tournaments)
+    text = ''
+
+    tournaments.each do |tournament|
+      template = Date.parse(tournament[:finish_date]) >= Date.today ? 
+        STRINGS[:not_finished_tournament] : STRINGS[:finished_tournament]
+      text << template % tournament
+    end
+
+    return text
   end
 end

@@ -26,8 +26,11 @@ describe Bot, :logger, :telegram do
       expect_reply('no body', STRINGS[:nobody] % {name: 'no', surname: 'body'})
     end
 
-    # it 'sends messages about founded players' do
-    #   allow(Web).to receive(:search_players) { players } # set players
-    # end
+    it 'sends 2 messages about 2 founded players' do
+      allow(bot).to receive(:search_players_on_site) { players }
+      allow(msg).to receive(:text) { 'some body' }
+      expect(api).to receive(:send_message).twice
+      bot.read(msg)
+    end
   end
 end
