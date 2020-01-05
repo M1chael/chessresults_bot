@@ -58,5 +58,19 @@ describe Bot, :logger, :telegram do
         with(text: 'Удалить из отслеживаемых', callback_data: 'del:1')
       bot.read(msg)
     end
+
+    it 'tracks player' do
+      allow(msg).to receive(:data) { 'add:2' }
+      allow(Player).to receive(:new).with(number: 2).and_return( player1 )
+      expect(player1).to receive(:track_by).with(1)
+      bot.read(msg)
+    end
+
+    it 'untracks player' do
+      allow(msg).to receive(:data) { 'del:2' }
+      allow(Player).to receive(:new).with(number: 2).and_return( player2 )
+      expect(player2).to receive(:untrack_by).with(1)
+      bot.read(msg)
+    end
   end
 end

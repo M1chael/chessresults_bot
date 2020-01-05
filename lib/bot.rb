@@ -27,8 +27,8 @@ class Bot
   end
 
   def read(message)
+    @uid = message.chat.id
     if message.respond_to?(:text)
-      @uid = message.chat.id
       case message.text
       when '/start'
         send_message(text: STRINGS[:hello])
@@ -37,6 +37,14 @@ class Bot
       else
         @telegram.api.send_chat_action(chat_id: @uid, action: :typing)
         search_players(message.text)
+      end
+    elsif message.respond_to?(:data)
+      player = Player.new(number: message.data.split(':')[1].to_i)
+      case message.data.split(':')[0]
+      when 'add'
+        player.track_by(@uid)
+      when 'del'
+        player.untrack_by(@uid)
       end
     end
   end
