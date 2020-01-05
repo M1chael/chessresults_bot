@@ -6,7 +6,7 @@ describe Web do
 
   # let(:player) { instance_double('Player', name: 'иван', surname: 'иванов') }
 
-  describe '#search_players' do
+  describe '#list_players' do
     before(:example) do
       # stub_web(:get, 'http://chess-results.com/spielersuche.aspx', 'search_form.html')
       # stub_web(:post, 'http://chess-results.com/spielersuche.aspx', 'search_ivanov_ivan.html')
@@ -16,6 +16,10 @@ describe Web do
 
     it 'returns list of all players by tournament id' do
       expect(list_players(478864).size).to eq(52)
+    end
+
+    it 'returns players with tournament numbers and names' do
+      list_players(478864).each{|player| expect(player.keys).to include(:snr, :name)}
     end
   end
 end

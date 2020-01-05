@@ -6,11 +6,14 @@ require 'open-uri'
 
 module Web
   def list_players(tournament)
-    players = {}
+    players = []
+    
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?zeilen=99999"))
     page.xpath('//*[@class="CRs1"]/tr/td[3]/a').each do |a|
-      players[a.xpath('@href').text[/snr=(\d+)/, 1].to_i] = a.text
+      players << {snr: a.xpath('@href').text[/snr=(\d+)/, 1].to_i, name: a.text}
     end
+
+    return players
   end
   # def search_players_on_site(player)
   #   load_params
