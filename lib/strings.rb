@@ -34,3 +34,7 @@ PLAYER
     
 STRINGS[:not_finished_tournament] = "\n🚩 <b>%{name} — %{finish_date}</b>"
 STRINGS[:finished_tournament] = "\n🏁 %{name} — %{finish_date}"
+
+STRINGS[:callback_response] = {}
+STRINGS[:callback_response][:add] = 'Игрок добавлен в список отслеживания'
+STRINGS[:callback_response][:del] = 'Игрок удалён из списка отслеживания'

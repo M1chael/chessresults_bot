@@ -41,13 +41,12 @@ class Bot
     elsif message.respond_to?(:data)
       @uid = message.from.id
       player = Player.new(number: message.data.split(':')[1].to_i)
-      case message.data.split(':')[0]
-      when 'add'
-        player.track_by(@uid)
-      when 'del'
-        player.untrack_by(@uid)
-      end
+      action = message.data.split(':')[0].to_sym
+      player_actions = {add: :track_by, del: :untrack_by}
+      player.send(player_actions[action], @uid)
       edit_message(message_id: message.message.message_id, reply_markup: markup(player))
+      @telegram.api.answer_callback_query(callback_query_id: message.id, 
+        text: STRINGS[:callback_response][action])
     end
   end
 
