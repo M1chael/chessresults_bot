@@ -14,7 +14,10 @@ describe Bot, :logger, :telegram do
     [player1, player2].each do |player| 
       allow(player).to receive(:tracked_by?).and_return(false)
       allow(player).to receive(:number).and_return(1)
+      allow(player).to receive(:track_by)
+      allow(player).to receive(:untrack_by)
     end
+    allow(api).to receive(:edit_message_reply_markup)
   end
 
   describe '#read' do
@@ -61,15 +64,28 @@ describe Bot, :logger, :telegram do
 
     it 'tracks player' do
       allow(msg).to receive(:data) { 'add:2' }
-      allow(Player).to receive(:new).with(number: 2).and_return( player1 )
+      allow(Player).to receive(:new).with(number: 2).and_return(player1)
       expect(player1).to receive(:track_by).with(1)
       bot.read(msg)
     end
 
     it 'untracks player' do
       allow(msg).to receive(:data) { 'del:2' }
-      allow(Player).to receive(:new).with(number: 2).and_return( player2 )
+      allow(Player).to receive(:new).with(number: 2).and_return(player2)
       expect(player2).to receive(:untrack_by).with(1)
+      bot.read(msg)
+    end
+
+    it 'changes add-button to del-botton, when tracks player' do
+      allow(msg).to receive(:data) { 'add:2' }
+      allow(Player).to receive(:new).with(number: 2).and_return( player1 )
+      allow(player1).to receive(:tracked_by?).and_return(true)
+      allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+        with(text: 'Удалить из отслеживаемых', callback_data: 'del:1').and_return('del-button')
+      allow(Telegram::Bot::Types::InlineKeyboardMarkup). to receive(:new).
+        with(inline_keyboard: [['del-button']]).and_return('kb with del-button')
+      expect(api).to receive(:edit_message_reply_markup).with(chat_id: 1, message_id: 10, 
+        reply_markup: 'kb with del-button')
       bot.read(msg)
     end
   end

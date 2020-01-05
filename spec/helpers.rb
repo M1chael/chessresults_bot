@@ -8,6 +8,8 @@ module Helpers
   let(:telegram) { double(Telegram::Bot::Client) }
   let(:chat) { double(Telegram::Bot::Types::Chat) }
   let(:api) { double }
+  let(:from) { double }
+  let(:message) { double }
   let(:msg) { double(Telegram::Bot::Types::Message) }
   let(:player1_hash) { {:fullname=>"Иванов Иван",
     :number=>234,

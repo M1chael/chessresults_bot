@@ -1,7 +1,7 @@
 require 'player'
 require 'spec_helper'
 
-describe Player do
+describe Player, :db do
   describe '#add_tournament' do
     it 'add tournament' do
       player = Player.new(number: 1)

@@ -14,7 +14,7 @@ WebMock.disable_net_connect!(allow_localhost: true)
 
 RSpec.configure do |c|
   c.include Helpers
-  c.around(:example) do |example|
+  c.around(:example, :db) do |example|
     DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
   end
 
@@ -25,6 +25,10 @@ RSpec.configure do |c|
   end
   
   c.before(:example, :telegram) do
+    allow(msg).to receive(:message) { message }
+    allow(message).to receive(:message_id) { 10 }
+    allow(msg).to receive(:from) { from }
+    allow(from).to receive(:id) { 1 }
     allow(msg).to receive(:chat) { chat }
     allow(chat).to receive(:id) { 1 }
     allow(telegram).to receive(:api) { api }

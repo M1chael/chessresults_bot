@@ -27,8 +27,8 @@ class Bot
   end
 
   def read(message)
-    @uid = message.chat.id
     if message.respond_to?(:text)
+      @uid = message.chat.id
       case message.text
       when '/start'
         send_message(text: STRINGS[:hello])
@@ -39,6 +39,7 @@ class Bot
         search_players(message.text)
       end
     elsif message.respond_to?(:data)
+      @uid = message.from.id
       player = Player.new(number: message.data.split(':')[1].to_i)
       case message.data.split(':')[0]
       when 'add'
@@ -46,6 +47,7 @@ class Bot
       when 'del'
         player.untrack_by(@uid)
       end
+      edit_message(message_id: message.message.message_id, reply_markup: markup(player))
     end
   end
 
@@ -55,6 +57,11 @@ class Bot
     options[:chat_id] = @uid
     options[:parse_mode] = 'HTML'
     @telegram.api.send_message(options)
+  end
+
+  def edit_message(options)
+    options[:chat_id] = @uid
+    @telegram.api.edit_message_reply_markup(options)
   end
 
   def search_players(data)
