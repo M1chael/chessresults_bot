@@ -28,6 +28,10 @@ class Player
     DB[:trackers].insert(uid: uid, pid: @number)
   end
 
+  def untrack_by(uid)
+    DB[:trackers].where(uid: uid, pid: @number).delete
+  end
+
   private
 
   def list_tournaments(tournaments)

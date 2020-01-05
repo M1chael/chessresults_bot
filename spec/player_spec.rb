@@ -40,4 +40,13 @@ describe Player do
       expect(player.tracked_by?(2)).to be true
     end
   end
+
+  describe '#untrack_by' do
+    it 'removes tracker' do
+      player = Player.new(number: 1)
+      DB[:trackers].insert(uid: 2, pid: 1)
+      player.untrack_by(2)
+      expect(player.tracked_by?(2)).to be false
+    end
+  end
 end
