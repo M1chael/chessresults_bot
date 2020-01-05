@@ -88,5 +88,18 @@ describe Bot, :logger, :telegram do
         reply_markup: 'kb with del-button')
       bot.read(msg)
     end
+
+    it 'changes del-button to add-botton, when untracks player' do
+      allow(msg).to receive(:data) { 'del:2' }
+      allow(Player).to receive(:new).with(number: 2).and_return( player1 )
+      allow(player1).to receive(:tracked_by?).and_return(false)
+      allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+        with(text: 'Добавить в отслеживаемые', callback_data: 'add:1').and_return('add-button')
+      allow(Telegram::Bot::Types::InlineKeyboardMarkup). to receive(:new).
+        with(inline_keyboard: [['add-button']]).and_return('kb with add-button')
+      expect(api).to receive(:edit_message_reply_markup).with(chat_id: 1, message_id: 10, 
+        reply_markup: 'kb with add-button')
+      bot.read(msg)
+    end
   end
 end
