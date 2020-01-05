@@ -32,4 +32,12 @@ describe Player do
       expect(player.tracked_by?(1)).to be true
     end
   end
+
+  describe '#track_by' do
+    it 'sets tracker' do
+      player = Player.new(number: 1)
+      player.track_by(2)
+      expect(player.tracked_by?(2)).to be true
+    end
+  end
 end

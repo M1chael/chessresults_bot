@@ -4,6 +4,7 @@ require 'webmock/rspec'
 require 'yaml'
 require 'helpers'
 require 'sequel'
+require 'strings'
 
 wd = File.join(File.expand_path(File.dirname(__FILE__)), '../')
 CONFIG = YAML.load_file(File.join(wd, 'assets', 'config.yml'))

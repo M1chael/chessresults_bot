@@ -24,6 +24,10 @@ class Player
     !DB[:trackers][uid: uid, pid: @number].nil?
   end
 
+  def track_by(uid)
+    DB[:trackers].insert(uid: uid, pid: @number)
+  end
+
   private
 
   def list_tournaments(tournaments)
