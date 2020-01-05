@@ -7,10 +7,10 @@ require 'open-uri'
 module Web
   def list_players(tournament)
     players = []
-    
-    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?zeilen=99999"))
+
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=3&zeilen=99999"))
     page.xpath('//*[@class="CRs1"]/tr/td[3]/a').each do |a|
-      players << {snr: a.xpath('@href').text[/snr=(\d+)/, 1].to_i, name: a.text}
+      players << {snr: "#{tournament.to_i}:#{a.xpath('@href').text[/snr=(\d+)/, 1].to_i}", name: a.text}
     end
 
     return players

@@ -11,6 +11,7 @@ module Helpers
   # let(:from) { double }
   # let(:message) { double }
   let(:msg) { double(Telegram::Bot::Types::Message) }
+  let(:players) {[{snr: '123:1', name: 'Участник № 1'}, {snr: '123:2', name: 'Участник № 2'}]}
   # let(:player1_hash) { {fullname: "Иванов Иван",
   #   number: 234,
   #   club: "Mount Sent Patrick Academy",
@@ -32,8 +33,10 @@ module Helpers
   end
 
   def expect_reply(request, reply)
+    reply[:chat_id] = chat.id
+    reply[:parse_mode] = 'HTML'
     allow(msg).to receive(:text) { request }
-    expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
+    expect(api).to receive(:send_message).with(reply)
     bot.read(msg)
   end
 

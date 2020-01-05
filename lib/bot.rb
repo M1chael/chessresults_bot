@@ -29,7 +29,16 @@ class Bot
   def read(message)
     if message.respond_to?(:text)
       @uid = message.chat.id
-      send_message(text: STRINGS[:hello]) if message.text == '/start'
+      if message.text == '/start'
+        send_message(text: STRINGS[:hello]) 
+      else
+        players = list_players(message.text.to_i)
+        if players.size == 0
+          send_message(text: STRINGS[:nothing_found])
+        else
+          send_message(text: STRINGS[:choose_player], reply_markup: markup(players))
+        end
+      end
       # case message.text
       # when '/start'
       #   send_message(text: STRINGS[:hello])
@@ -57,6 +66,15 @@ class Bot
     options[:chat_id] = @uid
     options[:parse_mode] = 'HTML'
     @telegram.api.send_message(options)
+  end
+
+  def markup(players)
+    kb = []
+    players.each do |player| 
+      kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: player[:name],
+        callback_data: player[:snr])]
+    end
+    return Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
   end
 
   # def edit_message(options)
