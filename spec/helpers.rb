@@ -4,13 +4,13 @@ require 'logger'
 module Helpers
   extend RSpec::SharedContext
 
-  # let(:logger) { instance_double(Logger) }
-  # let(:telegram) { double(Telegram::Bot::Client) }
-  # let(:chat) { double(Telegram::Bot::Types::Chat) }
-  # let(:api) { double }
+  let(:logger) { instance_double(Logger) }
+  let(:telegram) { double(Telegram::Bot::Client) }
+  let(:chat) { double(Telegram::Bot::Types::Chat) }
+  let(:api) { double }
   # let(:from) { double }
   # let(:message) { double }
-  # let(:msg) { double(Telegram::Bot::Types::Message) }
+  let(:msg) { double(Telegram::Bot::Types::Message) }
   # let(:player1_hash) { {fullname: "Иванов Иван",
   #   number: 234,
   #   club: "Mount Sent Patrick Academy",
@@ -31,11 +31,11 @@ module Helpers
 	    to_return(File.read(File.join('test/pages/', file_name)))
   end
 
-  # def expect_reply(request, reply)
-  #   allow(msg).to receive(:text) { request }
-  #   expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
-  #   bot.read(msg)
-  # end
+  def expect_reply(request, reply)
+    allow(msg).to receive(:text) { request }
+    expect(api).to receive(:send_message).with(chat_id: chat.id, text: reply, parse_mode: 'HTML')
+    bot.read(msg)
+  end
 
   # def allow_today(date)
   #   allow(Date).to receive(:today).and_return(date)
