@@ -32,8 +32,8 @@ STRINGS[:player] = <<~PLAYER
   Турниры:%{tournaments}
 PLAYER
     
-STRINGS[:not_finished_tournament] = "\n🚩 <b>%{name} — %{finish_date}</b>"
-STRINGS[:finished_tournament] = "\n🏁 %{name} — %{finish_date}"
+STRINGS[:not_finished_tournament] = "\n🚩 <b>%{title}</b>\n%{start_date} — %{finish_date}\n"
+STRINGS[:finished_tournament] = "\n🏁 %{title}\n%{start_date} — %{finish_date}\n"
 
 STRINGS[:callback_response] = {}
 STRINGS[:callback_response][:add] = 'Игрок добавлен в список отслеживания'

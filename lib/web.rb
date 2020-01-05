@@ -13,10 +13,10 @@ module Web
 
   def load_params
     @params = nil
-    get_content(:Get, URI(CONFIG[:search_form][:URL]))
+    page = get_content(:Get, URI(CONFIG[:search_form][:URL]))
     @params = CONFIG[:search_form][:params]
     @params.each do |name, value| 
-      @params[name] = @page.xpath("//*[@id=\"#{name}\"]")[0]['value'] if @params[name].nil?
+      @params[name] = page.xpath("//*[@id=\"#{name}\"]")[0]['value'] if @params[name].nil?
     end
   end
 
@@ -31,9 +31,13 @@ module Web
         @players << Player.new(fullname: cells[0].text, number: number, club: cells[3].text,
           fed: cells[4].text) if @players.none?{|player| player.number == number}
         tournament_id = cells[5].xpath('a/@href').text[/tnr(\d+)\..+/, 1]
-        get_content(:Get, URI("http://chess-results.com/tnr#{tournament_id}.aspx"))
-        @players[@players.find_index{|player| player.number == number}].add_tournament( 
-          {name: @page.xpath('//*/h2')[0].text, finish_date: cells[6].text})
+        title = get_content(:Get, URI("http://chess-results.com/tnr#{tournament_id}.aspx")).
+          xpath('//*/h2')[0].text
+        start_date = get_content(:Get, URI("http://chess-results.com/tnr#{tournament_id}.aspx?art=14")).
+          xpath('//*/table[@class="CRs1"]/tr[2]/td[2]').text.strip
+        # require 'byebug'; byebug
+        @players[@players.find_index{|player| player.number == number}].add_tournament(
+          {title: title, start_date: start_date, finish_date: cells[6].text})
       end
     end
   end
@@ -47,6 +51,6 @@ module Web
     data = http.request(req)
     @cookies = data&.response['set-cookie']
     @cookies = @cookies.split('; ')[0] if !@cookies.nil?
-    @page = Nokogiri::HTML(data.body)
+    return Nokogiri::HTML(data.body)
   end
 end

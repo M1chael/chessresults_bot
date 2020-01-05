@@ -13,9 +13,10 @@ describe Player, :db do
   describe '#to_hash' do
     it 'makes hash' do
       player = Player.new(fullname: 'fullname', number: 1, club: 'club', fed: 'fed')
-      player.add_tournament(name: 'name', finish_date: '0000/01/01')
+      tournament = {title: 'title', start_date: '0000/01/01', finish_date: '0000/01/05'}
+      player.add_tournament(tournament)
       expect(player.to_hash).to eq({fullname: 'fullname', number: 1, club: 'club', fed: 'fed',
-        tournaments: "\n🏁 name — 0000/01/01"})
+        tournaments: STRINGS[:finished_tournament] % tournament})
     end
   end
 
