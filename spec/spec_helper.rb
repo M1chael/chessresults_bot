@@ -8,7 +8,7 @@ require 'strings'
 
 wd = File.join(File.expand_path(File.dirname(__FILE__)), '../')
 CONFIG = YAML.load_file(File.join(wd, 'assets', 'config.yml'))
-DB = Sequel.sqlite(File.expand_path('../../assets/results.db', __FILE__))
+DB = Sequel.sqlite(File.expand_path('../../assets/trackers.db', __FILE__))
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
