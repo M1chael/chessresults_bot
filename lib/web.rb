@@ -11,7 +11,6 @@ module Web
     page.xpath('//*[@class="CRs1"]/tr/td[3]/a').each do |a|
       players << {snr: "#{tournament.to_i}:#{a.xpath('@href').text[/snr=(\d+)/, 1].to_i}", name: a.text}
     end
-
     return players
   end
 
@@ -21,7 +20,6 @@ module Web
       finish_date: '//table[@class="CRs1"]/tr[last()]/td[2]'}
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=14"))
     xpath.each{|key, value| result[key] = page.xpath(value).text.strip}
-
     return result
   end
 
@@ -35,7 +33,6 @@ module Web
         result[field] = val if val > result[field]
       end
     end
-
     return result
   end
 
@@ -52,7 +49,6 @@ module Web
     result[:player] = result[:color] == :white ? row[3].strip : row[9].strip
     result[:opponent] = result[:color] == :white ? row[9].strip : row[3].strip
     result[:rating] = result[:color] == :white ? row[10].to_i : row[4].to_i
-
     return result
   end
 
@@ -60,8 +56,12 @@ module Web
     result = {}
     page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=1&rd=%{rd}' % options))
     result[:tournament] = page.xpath('(//h2)[1]').text.strip
-    row = page.xpath('//table[@class="CRs1"]/tr/td[normalize-space(text())=%d]/../td' % 
+    row = page.xpath('//table[@class="CRs1"]/tr/td[2][normalize-space(text())=%d]/../td' % 
       options[:snr].to_i).collect(&:text)
+    result[:player] = row[3].strip
+    result[:rank] = page.xpath('count(//table[@class="CRs1"]/tr/td[2]
+      [normalize-space(text())=%d]/../preceding-sibling::*)' % options[:snr].to_i).to_i
+    return result
   end
   # def search_players_on_site(player)
   #   load_params
