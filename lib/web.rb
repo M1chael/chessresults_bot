@@ -2,7 +2,6 @@ require 'nokogiri'
 require 'uri'
 require 'net/http'
 require 'open-uri'
-# require_relative 'player'
 
 module Web
   def list_players(tournament)
@@ -21,6 +20,20 @@ module Web
       finish_date: '//table[@class="CRs1"]/tr[last()]/td[2]'}
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=14"))
     xpath.each{|key, value| result[key] = page.xpath(value).text.strip}
+
+    return result
+  end
+
+  def tournament_state(tournament)
+    result = {draw: 0, result: 0}
+    search = {draw: 'Пары по доскам', result: 'Положение после'}
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx"))
+    search.each do |field, str|
+      page.xpath('//tr/td[normalize-space(text())="%s"]/../td[2]/a' % str).each do |a|
+        val = a.text[/Тур(\d)+/, 1].to_i
+        result[field] = val if val > result[field]
+      end
+    end
 
     return result
   end

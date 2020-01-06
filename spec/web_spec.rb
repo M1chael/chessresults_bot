@@ -4,12 +4,8 @@ require 'spec_helper'
 describe Web do
   include Web
 
-  # let(:player) { instance_double('Player', name: 'иван', surname: 'иванов') }
-
   describe '#list_players' do
     before(:example) do
-      # stub_web(:get, 'http://chess-results.com/spielersuche.aspx', 'search_form.html')
-      # stub_web(:post, 'http://chess-results.com/spielersuche.aspx', 'search_ivanov_ivan.html')
       stub_web(:get, %r{\Ahttp://chess-results.com/tnr\d+.aspx\?art=3&zeilen=99999\z}, 'tnr478864.html')
     end
 
@@ -31,6 +27,16 @@ describe Web do
       expect(tournament_info(478864)).to eq({title: 
         'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
         start_date: '2020/01/05', finish_date: '2020/01/08'})
+    end
+  end
+
+  describe '#tournament_state' do
+    before(:example) do
+      stub_web(:get, %r{\Ahttp://chess-results.com/tnr\d+.aspx\z}, 'after1day.html')
+    end
+
+    it 'returns current draw and results published rounds' do
+      expect(tournament_state(478864)).to eq({draw: 3, result: 2})
     end
   end
 end
