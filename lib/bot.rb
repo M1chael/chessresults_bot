@@ -52,8 +52,8 @@ class Bot
       # end
     elsif message.respond_to?(:data)
       @uid = message.from.id
-      tid, snr = message.data.split(':').map(&:to_i)
-      Tracker.new(uid: @uid, tid: tid, snr: snr)
+      tnr, snr = message.data.split(':').map(&:to_i)
+      Tracker.new(uid: @uid, tnr: tnr, snr: snr)
     #   player = Player.new(number: message.data.split(':')[1].to_i)
     #   action = message.data.split(':')[0].to_sym
     #   player_actions = {add: :track_by, del: :untrack_by}

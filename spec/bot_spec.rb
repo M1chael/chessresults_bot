@@ -44,7 +44,7 @@ describe Bot, :logger, :telegram do
 
     context 'when player button pressed' do
       before(:example) do
-        allow(msg).to receive(:data) { "#{tracker_options[:tid]}:#{tracker_options[:snr]}" }
+        allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
         allow(Tracker).to receive(:new)
       end
 

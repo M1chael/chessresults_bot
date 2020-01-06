@@ -5,6 +5,6 @@ class Tracker
   include Web
 
   def initialize(options)
-    DB[:trackers].insert(options.merge(tournament_state(options[:tid]))) if DB[:trackers][options].nil?
+    DB[:trackers].insert(options.merge(tournament_state(options[:tnr]))) if DB[:trackers][options].nil?
   end
 end

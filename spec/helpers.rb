@@ -15,7 +15,7 @@ module Helpers
   let(:tournament) { {
     title: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
     start_date: '2020/01/05', finish_date: '2020/01/08'} }
-  let(:tracker_options) { {uid: 1, tid: 2, snr: 3} }
+  let(:tracker_options) { {uid: 1, tnr: 2, snr: 3} }
   # let(:player1_hash) { {fullname: "Иванов Иван",
   #   number: 234,
   #   club: "Mount Sent Patrick Academy",

@@ -37,6 +37,22 @@ module Web
 
     return result
   end
+
+  def get_draw(options)
+    result = {}
+    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=2&rd=%{rd}' % options))
+    result.merge!(page.xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
+      named_captures.transform_keys(&:to_sym))
+    row = page.xpath('//table[@class="CRs1"]/tr/td[normalize-space(text())=%d]/../td' % 
+      options[:snr].to_i).collect(&:text)
+    result[:desk] = row[0].to_i
+    result[:color] = row[1].to_i == options[:snr].to_i ? :white : :black
+    result[:player] = result[:color] == :white ? row[3].strip : row[9].strip
+    result[:opponent] = result[:color] == :white ? row[9].strip : row[3].strip
+    result[:rating] = result[:color] == :white ? row[10].to_i : row[4].to_i
+
+    return result
+  end
   # def search_players_on_site(player)
   #   load_params
   #   get_players(player)
