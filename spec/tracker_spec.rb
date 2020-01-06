@@ -2,7 +2,11 @@ require 'tracker'
 require 'spec_helper'
 
 describe Tracker, :db do
-  let!(:tracker) { Tracker.new(tracker_options) }
+  before(:example) do
+    allow_any_instance_of(Web).to receive(:tournament_state).
+      and_return({draw: 3, result: 2})
+    @tracker = Tracker.new(tracker_options)
+  end
 
   describe '#new' do
     it 'sets new tracker' do
@@ -12,6 +16,11 @@ describe Tracker, :db do
     it 'prevents duplicates' do
       Tracker.new(tracker_options)
       expect(DB[:trackers].where(tracker_options).all.size).to eq(1)
+    end
+
+    it 'sets current draw and result' do
+      expect(DB[:trackers][tracker_options][:draw]).to eq(3)
+      expect(DB[:trackers][tracker_options][:result]).to eq(2)
     end
   end
 end

@@ -1,8 +1,10 @@
 require 'sequel'
+require_relative 'web'
 
 class Tracker
+  include Web
+
   def initialize(options)
-    options.each{ |key, value| instance_variable_set("@#{key}", value) }
-    DB[:trackers].insert(options) if DB[:trackers][options].nil?
+    DB[:trackers].insert(options.merge(tournament_state(options[:tid]))) if DB[:trackers][options].nil?
   end
 end
