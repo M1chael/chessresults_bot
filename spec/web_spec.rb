@@ -32,11 +32,16 @@ describe Web do
 
   describe '#tournament_state' do
     before(:example) do
-      stub_web(:get, %r{\Ahttp://chess-results.com/tnr\d+.aspx\z}, 'after1day.html')
     end
 
     it 'returns current draw and results published rounds' do
+      stub_web(:get, 'http://chess-results.com/tnr478864.aspx', 'after1day.html')
       expect(tournament_state(478864)).to eq({draw: 3, result: 2})
+    end
+
+    it 'returns zeros for not started tournament' do
+      stub_web(:get, 'http://chess-results.com/tnr502281.aspx', 'tnr502281.html')
+      expect(tournament_state(502281)).to eq({draw: 0, result: 0})
     end
   end
 end
