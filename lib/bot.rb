@@ -32,11 +32,13 @@ class Bot
       if message.text == '/start'
         send_message(text: STRINGS[:hello]) 
       else
-        players = list_players(message.text.to_i)
+        tournament = message.text.to_i
+        players = list_players(tournament)
         if players.size == 0
           send_message(text: STRINGS[:nothing_found])
         else
-          send_message(text: STRINGS[:choose_player], reply_markup: markup(players))
+          send_message(text: STRINGS[:choose_player] % tournament_info(tournament), 
+            reply_markup: markup(players))
         end
       end
       # case message.text

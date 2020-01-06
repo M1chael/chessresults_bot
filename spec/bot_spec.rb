@@ -10,6 +10,7 @@ describe Bot, :logger, :telegram do
   before(:example) do
     bot.instance_variable_set(:@telegram, telegram)
     allow(bot).to receive(:list_players).and_return(players)
+    allow(bot).to receive(:tournament_info).and_return(tournament)
 #     allow(player1).to receive(:to_hash).and_return(player1_hash)
 #     allow(player2).to receive(:to_hash).and_return(player2_hash)
 #     [player1, player2].each do |player| 
@@ -31,14 +32,14 @@ describe Bot, :logger, :telegram do
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])
     end
 
-    it 'list players of tournament' do
+    it 'lists players of tournament' do
       players.each do |player|
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
           with(text: player[:name], callback_data: player[:snr]).and_return(player[:name])
       end
       allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
         with(inline_keyboard: [[players[0][:name]], [players[1][:name]]]).and_return('kb')
-      expect_reply('123', text: STRINGS[:choose_player], reply_markup: 'kb')
+      expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 
 #     it 'asks player name and surname' do
