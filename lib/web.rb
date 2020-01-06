@@ -7,13 +7,22 @@ require 'open-uri'
 module Web
   def list_players(tournament)
     players = []
-
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=3&zeilen=99999"))
     page.xpath('//*[@class="CRs1"]/tr/td[3]/a').each do |a|
       players << {snr: "#{tournament.to_i}:#{a.xpath('@href').text[/snr=(\d+)/, 1].to_i}", name: a.text}
     end
 
     return players
+  end
+
+  def tournament_info(tournament)
+    result = {}
+    xpath = {title: '(//h2)[1]', start_date: '//table[@class="CRs1"]/tr[2]/td[2]',
+      finish_date: '//table[@class="CRs1"]/tr[last()]/td[2]'}
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=14"))
+    xpath.each{|key, value| result[key] = page.xpath(value).text.strip}
+
+    return result
   end
   # def search_players_on_site(player)
   #   load_params
