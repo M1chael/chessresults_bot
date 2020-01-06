@@ -3,7 +3,7 @@ require 'logger'
 require 'date'
 require_relative 'strings'
 require_relative 'web'
-# require_relative 'player'
+require_relative 'tracker'
 
 class Bot
   include Web
@@ -59,8 +59,8 @@ class Bot
     #   player_actions = {add: :track_by, del: :untrack_by}
     #   player.send(player_actions[action], @uid)
     #   edit_message(message_id: message.message.message_id, reply_markup: markup(player))
-    #   @telegram.api.answer_callback_query(callback_query_id: message.id, 
-    #     text: STRINGS[:callback_response][action])
+      @telegram.api.answer_callback_query(callback_query_id: message.id, 
+        text: STRINGS[:player_added])
     end
   end
 

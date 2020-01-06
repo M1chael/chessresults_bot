@@ -52,6 +52,12 @@ describe Bot, :logger, :telegram do
         expect(Tracker).to receive(:new).with(tracker_options)
         bot.read(msg)
       end
+
+      it 'shows notification about player tracking' do
+        expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
+          text: STRINGS[:player_added])
+        bot.read(msg)        
+      end
     end
 
 #     it 'asks player name and surname' do
