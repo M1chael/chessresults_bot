@@ -9,5 +9,10 @@ describe Tracker, :db do
     it 'sets new tracker' do
       expect(DB[:trackers][tracker_options]).not_to be_nil
     end
+
+    it 'prevents duplicates' do
+      Tracker.new(tracker_options)
+      expect(DB[:trackers].where(tracker_options).all.size).to eq(1)
+    end
   end
 end
