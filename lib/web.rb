@@ -2,6 +2,7 @@ require 'nokogiri'
 require 'uri'
 require 'net/http'
 require 'open-uri'
+require_relative 'strings'
 
 module Web
   def list_players(tournament)
@@ -44,8 +45,8 @@ module Web
     result[:tournament] = page.xpath('(//h2)[1]').text.strip
     result.merge!(page.xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
       named_captures.transform_keys(&:to_sym))
-    row = page.xpath('//table[@class="CRs1"]/tr/td[normalize-space(text())=%d]/../td' % 
-      options[:snr].to_i).collect(&:text)
+    row_indexes = {white_snr: 2, black_snr: 12, snr: options[:snr].to_i}
+    row = page.xpath(STRINGS[:row] % row_indexes).collect(&:text)
     result[:desk] = row[0].to_i
     result[:color] = row[1].to_i == options[:snr].to_i ? :white : :black
     result[:player] = result[:color] == :white ? row[3].strip : row[9].strip
@@ -53,6 +54,14 @@ module Web
     result[:rating] = result[:color] == :white ? row[10].to_i : row[4].to_i
 
     return result
+  end
+
+  def get_rank(options)
+    result = {}
+    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=1&rd=%{rd}' % options))
+    result[:tournament] = page.xpath('(//h2)[1]').text.strip
+    row = page.xpath('//table[@class="CRs1"]/tr/td[normalize-space(text())=%d]/../td' % 
+      options[:snr].to_i).collect(&:text)
   end
   # def search_players_on_site(player)
   #   load_params

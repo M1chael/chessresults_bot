@@ -46,3 +46,5 @@ STRINGS[:nothing_found] = '🤷‍♂️ Ничего не найдено. По�
 # STRINGS[:callback_response][:add] = 'Игрок добавлен в список отслеживания'
 # STRINGS[:callback_response][:del] = 'Игрок удалён из списка отслеживания'
 STRINGS[:player_added] = 'Игрок добавлен в список отслеживания'
+
+STRINGS[:row] = '//table[@class="CRs1"]/tr/td[%{white_snr}][normalize-space(text())=%{snr}]/../td | //table[@class="CRs1"]/tr/td[%{black_snr}][normalize-space(text())=%{snr}]/../td'

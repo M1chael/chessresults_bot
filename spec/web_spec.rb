@@ -4,11 +4,12 @@ require 'spec_helper'
 describe Web do
   include Web
 
-  let(:draw) { {tournament: 'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100',
-    date: '2019/10/12', time: '14:00',
-    player: 'Митин Кирилл', color: :black, desk: 4, 
-    opponent: 'Доля  Семен', rating: 1000} }
-  # let(:result) { {player: } }
+  let(:draw) { {tournament: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199',
+    date: '2020/01/07', time: '12:30',
+    player: 'Бондарев Илья', color: :white, desk: 6, 
+    opponent: 'Попуца Дмитрий', rating: 1133} }
+  let(:rank) { {tournament: 'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100',
+    player: 'Ольховик Анна', rank: 7} }
 
   describe '#list_players' do
     before(:example) do
@@ -50,15 +51,15 @@ describe Web do
 
   describe '#get_draw' do
     it 'returns draw info by tournament, player and round' do
-      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=2&rd=1', 'tnr478864_rd1_pairs.html')
-      expect(get_draw(tnr: 478864, snr: 4, rd: 1)).to eq(draw)
+      stub_web(:get, 'http://chess-results.com/tnr502281.aspx?art=2&rd=1', 'tnr502281_rd5_draw.html')
+      expect(get_draw(tnr: 502281, snr: 4, rd: 1)).to eq(draw)
     end
   end
 
-  # describe '#get_result' do
-  #   it 'returns result by tournament, player and round' do
-  #     stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
-  #     expect(get_result(tnr: 478864, snr: 4, rd: 1)).to eq(result)
-  #   end
-  # end
+  describe '#get_rank' do
+    it 'returns result by tournament, player and round' do
+      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
+      expect(get_rank(tnr: 478864, snr: 11, rd: 1)).to eq(rank)
+    end
+  end
 end
