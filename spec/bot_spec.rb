@@ -42,6 +42,18 @@ describe Bot, :logger, :telegram do
       expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 
+    context 'when player button pressed' do
+      before(:example) do
+        allow(msg).to receive(:data) { "#{tracker_options[:tid]}:#{tracker_options[:snr]}" }
+        allow(Tracker).to receive(:new)
+      end
+
+      it 'tracks player' do
+        expect(Tracker).to receive(:new).with(tracker_options)
+        bot.read(msg)
+      end
+    end
+
 #     it 'asks player name and surname' do
 #       expect_reply('/find', STRINGS[:search_player])
 #     end

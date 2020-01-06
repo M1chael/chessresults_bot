@@ -27,8 +27,8 @@ RSpec.configure do |c|
   c.before(:example, :telegram) do
   #   allow(msg).to receive(:message) { message }
   #   allow(message).to receive(:message_id) { 10 }
-  #   allow(msg).to receive(:from) { from }
-  #   allow(from).to receive(:id) { 1 }
+    allow(msg).to receive(:from) { from }
+    allow(from).to receive(:id) { 1 }
   #   allow(msg).to receive(:id) { 10 }
     allow(msg).to receive(:chat) { chat }
     allow(chat).to receive(:id) { 1 }
