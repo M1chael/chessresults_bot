@@ -4,9 +4,11 @@ require 'spec_helper'
 describe Web do
   include Web
 
-  let(:draw) { {date: '2019/10/12', time: '14:00',
+  let(:draw) { {tournament: 'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100',
+    date: '2019/10/12', time: '14:00',
     player: 'Митин Кирилл', color: :black, desk: 4, 
     opponent: 'Доля  Семен', rating: 1000} }
+  # let(:result) { {player: } }
 
   describe '#list_players' do
     before(:example) do
@@ -52,4 +54,11 @@ describe Web do
       expect(get_draw(tnr: 478864, snr: 4, rd: 1)).to eq(draw)
     end
   end
+
+  # describe '#get_result' do
+  #   it 'returns result by tournament, player and round' do
+  #     stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
+  #     expect(get_result(tnr: 478864, snr: 4, rd: 1)).to eq(result)
+  #   end
+  # end
 end

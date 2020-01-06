@@ -41,6 +41,7 @@ module Web
   def get_draw(options)
     result = {}
     page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=2&rd=%{rd}' % options))
+    result[:tournament] = page.xpath('(//h2)[1]').text.strip
     result.merge!(page.xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
       named_captures.transform_keys(&:to_sym))
     row = page.xpath('//table[@class="CRs1"]/tr/td[normalize-space(text())=%d]/../td' % 
