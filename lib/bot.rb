@@ -64,10 +64,14 @@ class Bot
     end
   end
 
+  def post(options)
+    send_message(options)
+  end
+
   private
 
   def send_message(options)
-    options[:chat_id] = @uid
+    options[:chat_id] ||= @uid
     options[:parse_mode] = 'HTML'
     @telegram.api.send_message(options)
   end

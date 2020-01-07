@@ -155,4 +155,12 @@ describe Bot, :logger, :telegram do
 #       end
 #     end
   end
+
+  describe '#post' do
+    it 'sends text to uid' do
+      options = {chat_id: 1, text: 'text', parse_mode: 'HTML'}
+      expect(api).to receive(:send_message).with(options)
+      bot.post(chat_id: 1, text: 'text')
+    end
+  end
 end
