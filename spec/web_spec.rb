@@ -4,11 +4,13 @@ require 'spec_helper'
 describe Web do
   include Web
 
-  let(:draw) { {tournament: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199',
-    date: '2020/01/07', time: '12:30',
+  let(:draw) { {tournament: 
+    'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', rd: 1,
+    date: '2020/01/07', time: '12:30', 
     player: 'Бондарев Илья', color: :white, desk: 6, 
     opponent: 'Попуца Дмитрий', rating: 1133} }
-  let(:rank) { {tournament: 'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100',
+  let(:rank) { {tournament: 
+    'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100', rd: 1,
     player: 'Ольховик Анна', rank: 7} }
 
   describe '#list_players' do
@@ -49,7 +51,7 @@ describe Web do
     end
   end
 
-  describe '#get_info' do
+  describe '#stage_info' do
     it 'returns draw info by tournament, player and round' do
       stub_web(:get, 'http://chess-results.com/tnr502281.aspx?art=2&rd=1', 'tnr502281_rd5_draw.html')
       expect(stage_info(stage: :draw, tnr: 502281, snr: 4, rd: 1)).to eq(draw)

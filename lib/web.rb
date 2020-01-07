@@ -38,12 +38,11 @@ module Web
   end
 
   def stage_info(options)
-    info = {}
+    options[:info] = {rd: options[:rd]}
     stage = options[:stage]
     options[:art] = stage == :draw ? 2 : 1
-    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=%{art}&rd=%{rd}' % options))
-    info[:tournament] = page.xpath('(//h2)[1]').text.strip
-    options = {snr: options[:snr], info: info, page: page}
+    options[:page] = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=%{art}&rd=%{rd}' % options))
+    options[:info][:tournament] = options[:page].xpath('(//h2)[1]').text.strip
     return stage == :draw ? get_draw(options) : get_rank(options)
   end
 
