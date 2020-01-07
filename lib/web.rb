@@ -7,7 +7,7 @@ require_relative 'strings'
 module Web
   def list_players(tournament)
     players = []
-    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=3&zeilen=99999"))
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?lan=11&art=3&zeilen=99999"))
     page.xpath('//*[@class="CRs1"]/tr/td[3]/a').each do |a|
       players << {snr: "#{tournament.to_i}:#{a.xpath('@href').text[/snr=(\d+)/, 1].to_i}", name: a.text}
     end
@@ -19,7 +19,7 @@ module Web
     xpath = {title: '(//h2)[1]', start_date: '//table[@class="CRs1"]/tr[2]/td[2]',
       start_time: '//table[@class="CRs1"]/tr[2]/td[3]',
       finish_date: '//table[@class="CRs1"]/tr[last()]/td[2]'}
-    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=14"))
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?lan=11&art=14"))
     xpath.each{|key, value| result[key] = page.xpath(value).text.strip}
     return result
   end
@@ -27,7 +27,7 @@ module Web
   def tournament_stage(tournament)
     result = {draw: 0, result: 0}
     search = {draw: 'Пары по доскам', result: 'Положение после'}
-    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx"))
+    page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?lan=11"))
     search.each do |field, str|
       page.xpath('//tr/td[normalize-space(text())="%s"]/../td[2]/a' % str).each do |a|
         val = a.text[/Тур(\d)+/, 1].to_i
@@ -41,7 +41,7 @@ module Web
     options[:info] = {rd: options[:rd]}
     stage = options[:stage]
     options[:art] = stage == :draw ? 2 : 1
-    options[:page] = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=%{art}&rd=%{rd}' % options))
+    options[:page] = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?lan=11&art=%{art}&rd=%{rd}' % options))
     options[:info][:tournament] = options[:page].xpath('(//h2)[1]').text.strip
     return stage == :draw ? get_draw(options) : get_rank(options)
   end
