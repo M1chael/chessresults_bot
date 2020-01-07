@@ -65,14 +65,17 @@ class Bot
   end
 
   def post
-    # DB[:trackers].each do |tracker|
-    #   stage = tournament_stage(tracker[:tid])
-    #   stage.keys.each do |key|
-    #     (tracker[key] + 1..stage[:key]).each do |st|
-          
-    #     end
-    #   end
-    # end
+    colors = {white: 'белыми', black: 'чёрными'}
+    DB[:trackers].each do |tracker|
+      stage = tournament_stage(tracker[:tnr])
+      stage.keys.each do |stage_name|
+        (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
+          info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
+          info[:color] = colors[info[:color]]
+          send_message(chat_id: tracker[:uid], text: STRINGS[stage_name] % info)
+        end
+      end
+    end
   end
 
   private

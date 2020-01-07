@@ -16,6 +16,14 @@ module Helpers
     title: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
     start_date: '2020/01/05', start_time: '14:00', finish_date: '2020/01/08'} }
   let(:tracker_options) { {uid: 1, tnr: 2, snr: 3} }
+  let(:draw) { {tournament: 
+    'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', rd: 1,
+    date: '2020/01/07', time: '12:30', 
+    player: 'Бондарев Илья', color: :white, desk: 6, 
+    opponent: 'Попуца Дмитрий', rating: 1133} }
+  let(:rank) { {tournament: 
+    'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100', rd: 1,
+    player: 'Ольховик Анна', score: '1,0', rank: 7} }
   # let(:player1_hash) { {fullname: "Иванов Иван",
   #   number: 234,
   #   club: "Mount Sent Patrick Academy",

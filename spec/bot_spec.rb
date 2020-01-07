@@ -167,7 +167,15 @@ describe Bot, :logger, :telegram do
     #   expect(api).to receive(:send_message).with(reply)
     # end
     it 'sends message about draw' do
-      
+      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
+      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 0)
+      allow(bot).to receive(:stage_info).with(stage: :draw, tnr: 2, snr: 3, rd: 1).
+        and_return(draw)
+      information = draw.dup
+      information[:color] = 'белыми'
+      expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
+        text: STRINGS[:draw] % information)
+      bot.post
     end
   end
 end
