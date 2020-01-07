@@ -14,5 +14,6 @@ class Tracker
 
   def update(options)
     DB[:trackers].where(@options).update(options)
+    @options.update(options)
   end
 end

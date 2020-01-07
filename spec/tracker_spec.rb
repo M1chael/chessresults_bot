@@ -31,5 +31,13 @@ describe Tracker, :db do
       expect(DB[:trackers][tracker_options][:draw]).to eq(5)
       expect(DB[:trackers][tracker_options][:result]).to eq(4)
     end
+
+    it 'updates multiple times' do
+      tracker = Tracker.new(uid: 1, tnr: 2, snr: 3, draw: 3, result: 2)
+      tracker.set
+      tracker.update(draw: 5)
+      tracker.update(draw: 7)
+      expect(DB[:trackers][tracker_options][:draw]).to eq(7)
+    end
   end
 end
