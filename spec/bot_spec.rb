@@ -3,6 +3,7 @@ require 'spec_helper'
 
 describe Bot, :logger, :telegram, :db do
   let(:bot) { Bot.new(token: 'test_token', log: 'path/to/log') }
+  let(:tracker) { instance_double(Tracker) }
 #   let(:player1) { double }
 #   let(:player2) { double }
 #   let(:players) { [player1, player2] }
@@ -11,6 +12,10 @@ describe Bot, :logger, :telegram, :db do
     bot.instance_variable_set(:@telegram, telegram)
     allow(bot).to receive(:list_players).and_return(players)
     allow(bot).to receive(:tournament_info).and_return(tournament)
+    allow(Tracker).to receive(:new).and_return(tracker)
+    allow(tracker).to receive(:set)
+    allow(tracker).to receive(:update)
+
 #     allow(player1).to receive(:to_hash).and_return(player1_hash)
 #     allow(player2).to receive(:to_hash).and_return(player2_hash)
 #     [player1, player2].each do |player| 
@@ -45,11 +50,11 @@ describe Bot, :logger, :telegram, :db do
     context 'when player button pressed' do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
-        allow(Tracker).to receive(:new)
       end
 
       it 'tracks player' do
         expect(Tracker).to receive(:new).with(tracker_options)
+        expect(tracker).to receive(:set)
         bot.read(msg)
       end
 
@@ -183,7 +188,7 @@ describe Bot, :logger, :telegram, :db do
     end
 
     it 'sends message about result' do
-      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 1)
+      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 0, result: 1)
       allow(bot).to receive(:stage_info).with(stage: :result, tnr: 2, snr: 3, rd: 1).
         and_return(rank)
        expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
@@ -197,6 +202,14 @@ describe Bot, :logger, :telegram, :db do
       allow(bot).to receive(:stage_info).with(hash_including(stage: :result)).and_return(rank)
       expect(api).to receive(:send_message).exactly(5).times
       bot.post           
+    end
+
+    it 'updates tracker' do
+      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 0, result: 1)
+      allow(bot).to receive(:stage_info).and_return(rank)
+      expect(Tracker).to receive(:new).with(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
+      expect(tracker).to receive(:update).with(result: 1)
+      bot.post
     end
   end
 end
