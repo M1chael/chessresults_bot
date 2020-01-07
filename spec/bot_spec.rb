@@ -1,7 +1,7 @@
 require 'bot'
 require 'spec_helper'
 
-describe Bot, :logger, :telegram do
+describe Bot, :logger, :telegram, :db do
   let(:bot) { Bot.new(token: 'test_token', log: 'path/to/log') }
 #   let(:player1) { double }
 #   let(:player2) { double }
@@ -157,8 +157,12 @@ describe Bot, :logger, :telegram do
   end
 
   describe '#post' do
+    let(:information) { draw.dup }
+      
     before(:example) do
+      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
       allow(bot).to receive(:stage_info)
+      information[:color] = 'белыми'
     end
     # it 'sends text to uid' do
     #   options = {chat_id: 1, text: 'text', parse_mode: 'HTML'}
@@ -170,24 +174,28 @@ describe Bot, :logger, :telegram do
     #   expect(api).to receive(:send_message).with(reply)
     # end
     it 'sends message about draw' do
-      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
       allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 0)
       allow(bot).to receive(:stage_info).with(stage: :draw, tnr: 2, snr: 3, rd: 1).
         and_return(draw)
-      information = draw.dup
-      information[:color] = 'белыми'
       expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
         text: STRINGS[:draw] % information)
       bot.post
     end
 
     it 'sends message about result' do
-      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 1, result: 0)
       allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 1)
       allow(bot).to receive(:stage_info).with(stage: :result, tnr: 2, snr: 3, rd: 1).
         and_return(rank)
        expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
         text: STRINGS[:result] % rank)
+      bot.post           
+    end
+
+    it 'sends messages about multiple draws and results' do
+      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 3, result: 2)
+      allow(bot).to receive(:stage_info).with(hash_including(stage: :draw)).and_return(draw)
+      allow(bot).to receive(:stage_info).with(hash_including(stage: :result)).and_return(rank)
+      expect(api).to receive(:send_message).exactly(5).times
       bot.post           
     end
   end

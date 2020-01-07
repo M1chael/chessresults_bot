@@ -17,14 +17,16 @@ STRINGS[:choose_player] = <<~CP
 CP
 
 STRINGS[:draw] = <<~DRAW
-  Название турнира: <b>%{tournament}</b>
-  %{rd} тур состоится %{date} %{time}
+  <b>%{tournament}</b>
+
+  %{rd} тур состоится %{date} в %{time}
   %{player} играет %{color} за %{desk} доской
   Соперник — %{opponent} (рейтинг: %{rating})
 DRAW
 
 STRINGS[:result] = <<~RES
-  Название турнира: <b>%{tournament}</b>
+  <b>%{tournament}</b>
+
   По итогам %{rd} тура %{player} с результатом %{score} занимает %{rank} место в турнирной таблице
 RES
 

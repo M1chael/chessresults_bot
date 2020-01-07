@@ -65,15 +65,22 @@ class Bot
   end
 
   def post
-    DB[:trackers].each do |tracker|
-      stage = tournament_stage(tracker[:tnr])
-      stage.keys.each do |stage_name|
-        (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
-          info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
-          send_message(chat_id: tracker[:uid], 
-            text: STRINGS[stage_name] % color(info)) if !info.nil?
+    begin
+      Telegram::Bot::Client.run(@token, logger: @logger) do |telegram|
+        @telegram = telegram
+        DB[:trackers].each do |tracker|
+          stage = tournament_stage(tracker[:tnr])
+          stage.keys.each do |stage_name|
+            (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
+              info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
+              send_message(chat_id: tracker[:uid], 
+                text: STRINGS[stage_name] % color(info)) if !info.nil?
+            end
+          end
         end
       end
+    rescue => error
+      @logger.fatal(error)
     end
   end
 

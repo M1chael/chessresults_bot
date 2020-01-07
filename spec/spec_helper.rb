@@ -36,6 +36,8 @@ RSpec.configure do |c|
     allow(api).to receive(:send_message)
   #   allow(api).to receive(:send_chat_action)
     allow(api).to receive(:answer_callback_query)
+    allow(Telegram::Bot::Client).to receive(:run).
+      with('test_token', logger: logger).and_yield(telegram)
   #   allow(api).to receive(:edit_message_reply_markup)
   end
 end
