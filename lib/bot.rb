@@ -65,14 +65,13 @@ class Bot
   end
 
   def post
-    colors = {white: 'белыми', black: 'чёрными'}
     DB[:trackers].each do |tracker|
       stage = tournament_stage(tracker[:tnr])
       stage.keys.each do |stage_name|
         (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
           info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
-          info[:color] = colors[info[:color]]
-          send_message(chat_id: tracker[:uid], text: STRINGS[stage_name] % info)
+          send_message(chat_id: tracker[:uid], 
+            text: STRINGS[stage_name] % color(info)) if !info.nil?
         end
       end
     end
@@ -93,6 +92,14 @@ class Bot
         callback_data: player[:snr])]
     end
     return Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+  end
+
+  def color(info)
+    if !info[:color].nil?
+      colors = {white: 'белыми', black: 'чёрными'}
+      info[:color] = colors[info[:color]]
+    end
+    return info
   end
 
   # def edit_message(options)

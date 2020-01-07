@@ -157,6 +157,9 @@ describe Bot, :logger, :telegram do
   end
 
   describe '#post' do
+    before(:example) do
+      allow(bot).to receive(:stage_info)
+    end
     # it 'sends text to uid' do
     #   options = {chat_id: 1, text: 'text', parse_mode: 'HTML'}
     #   expect(api).to receive(:send_message).with(options)
@@ -176,6 +179,16 @@ describe Bot, :logger, :telegram do
       expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
         text: STRINGS[:draw] % information)
       bot.post
+    end
+
+    it 'sends message about result' do
+      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 1, result: 0)
+      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 1)
+      allow(bot).to receive(:stage_info).with(stage: :result, tnr: 2, snr: 3, rd: 1).
+        and_return(rank)
+       expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
+        text: STRINGS[:result] % rank)
+      bot.post           
     end
   end
 end
