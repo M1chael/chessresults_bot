@@ -71,6 +71,9 @@ module Web
     row = options[:page].xpath('//table[@class="CRs1"]/tr/td[2][normalize-space(text())=%d]/../td' % 
       options[:snr].to_i).collect(&:text)
     info[:player] = row[3].strip
+    score_td = options[:page].xpath('count(//table[@class="CRs1"]/tr[1]/td[normalize-space(text())=
+      "Очки"]/preceding-sibling::*)')
+    info[:score] = row[score_td].strip
     info[:rank] = options[:page].xpath('count(//table[@class="CRs1"]/tr/td[2]
       [normalize-space(text())=%d]/../preceding-sibling::*)' % options[:snr].to_i).to_i
     return info

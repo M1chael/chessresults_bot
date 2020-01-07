@@ -11,7 +11,7 @@ describe Web do
     opponent: 'Попуца Дмитрий', rating: 1133} }
   let(:rank) { {tournament: 
     'Газовик опен юниор 2019, турнир Школьник, турнр А, рейтинг 1000-1100', rd: 1,
-    player: 'Ольховик Анна', rank: 7} }
+    player: 'Ольховик Анна', score: '1,0', rank: 7} }
 
   describe '#list_players' do
     before(:example) do
