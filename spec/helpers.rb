@@ -14,7 +14,7 @@ module Helpers
   let(:players) {[{snr: '123:1', name: 'Участник № 1'}, {snr: '123:2', name: 'Участник № 2'}]}
   let(:tournament) { {
     title: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
-    start_date: '2020/01/05', finish_date: '2020/01/08'} }
+    start_date: '2020/01/05', start_time: '14:00', finish_date: '2020/01/08'} }
   let(:tracker_options) { {uid: 1, tnr: 2, snr: 3} }
   # let(:player1_hash) { {fullname: "Иванов Иван",
   #   number: 234,
@@ -44,7 +44,7 @@ module Helpers
     bot.read(msg)
   end
 
-  # def allow_today(date)
-  #   allow(Date).to receive(:today).and_return(date)
-  # end
+  def allow_now(datetime)
+    allow(DateTime).to receive(:now).and_return(datetime)
+  end
 end

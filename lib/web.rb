@@ -17,6 +17,7 @@ module Web
   def tournament_info(tournament)
     result = {}
     xpath = {title: '(//h2)[1]', start_date: '//table[@class="CRs1"]/tr[2]/td[2]',
+      start_time: '//table[@class="CRs1"]/tr[2]/td[3]',
       finish_date: '//table[@class="CRs1"]/tr[last()]/td[2]'}
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx?art=14"))
     xpath.each{|key, value| result[key] = page.xpath(value).text.strip}

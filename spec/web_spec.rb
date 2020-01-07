@@ -33,7 +33,7 @@ describe Web do
     it 'returns title and dates of tournament' do
       expect(tournament_info(478864)).to eq({title: 
         'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
-        start_date: '2020/01/05', finish_date: '2020/01/08'})
+        start_date: '2020/01/05', start_time: '14:00', finish_date: '2020/01/08'})
     end
   end
 
