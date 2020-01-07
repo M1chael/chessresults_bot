@@ -15,7 +15,7 @@ WebMock.disable_net_connect!(allow_localhost: true)
 RSpec.configure do |c|
   c.include Helpers
   c.around(:example, :db) do |example|
-    DB.transaction(rollback: :always, auto_savepoint: true) { example.run }
+    DB.transaction(rollback: :always, auto_savepoint: true) { DB[:trackers].delete; example.run }
   end
 
   c.before(:example, :logger) do

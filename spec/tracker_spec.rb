@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe Tracker, :db do
   before(:example) do
-    allow_any_instance_of(Web).to receive(:tournament_state).
+    allow_any_instance_of(Web).to receive(:tournament_stage).
       and_return({draw: 3, result: 2})
     @tracker = Tracker.new(tracker_options)
   end

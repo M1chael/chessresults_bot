@@ -64,8 +64,15 @@ class Bot
     end
   end
 
-  def post(options)
-    send_message(options)
+  def post
+    # DB[:trackers].each do |tracker|
+    #   stage = tournament_stage(tracker[:tid])
+    #   stage.keys.each do |key|
+    #     (tracker[key] + 1..stage[:key]).each do |st|
+          
+    #     end
+    #   end
+    # end
   end
 
   private

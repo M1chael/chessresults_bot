@@ -157,10 +157,17 @@ describe Bot, :logger, :telegram do
   end
 
   describe '#post' do
-    it 'sends text to uid' do
-      options = {chat_id: 1, text: 'text', parse_mode: 'HTML'}
-      expect(api).to receive(:send_message).with(options)
-      bot.post(chat_id: 1, text: 'text')
+    # it 'sends text to uid' do
+    #   options = {chat_id: 1, text: 'text', parse_mode: 'HTML'}
+    #   expect(api).to receive(:send_message).with(options)
+    #   bot.post(chat_id: 1, text: 'text')
+    # end
+    # it 'sends message about starting tournament less than 24 hours' do
+    #   allow_now(DateTime.parse('2020/01/04 14:05'))
+    #   expect(api).to receive(:send_message).with(reply)
+    # end
+    it 'sends message about draw' do
+      
     end
   end
 end

@@ -37,29 +37,41 @@ describe Web do
     end
   end
 
-  describe '#tournament_state' do
+  describe '#tournament_stage' do
     it 'returns current draw and results published rounds' do
       stub_web(:get, 'http://chess-results.com/tnr478864.aspx', 'after1day.html')
-      expect(tournament_state(478864)).to eq({draw: 3, result: 2})
+      expect(tournament_stage(478864)).to eq({draw: 3, result: 2})
     end
 
     it 'returns zeros for not started tournament' do
       stub_web(:get, 'http://chess-results.com/tnr502281.aspx', 'tnr502281.html')
-      expect(tournament_state(502281)).to eq({draw: 0, result: 0})
+      expect(tournament_stage(502281)).to eq({draw: 0, result: 0})
     end
   end
 
-  describe '#get_draw' do
+  describe '#get_info' do
     it 'returns draw info by tournament, player and round' do
       stub_web(:get, 'http://chess-results.com/tnr502281.aspx?art=2&rd=1', 'tnr502281_rd5_draw.html')
-      expect(get_draw(tnr: 502281, snr: 4, rd: 1)).to eq(draw)
+      expect(stage_info(stage: :draw, tnr: 502281, snr: 4, rd: 1)).to eq(draw)
     end
+
+   it 'returns rank by tournament, player and round' do
+      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
+      expect(stage_info(stage: :result, tnr: 478864, snr: 11, rd: 1)).to eq(rank)
+    end   
   end
 
-  describe '#get_rank' do
-    it 'returns result by tournament, player and round' do
-      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
-      expect(get_rank(tnr: 478864, snr: 11, rd: 1)).to eq(rank)
-    end
-  end
+  # describe '#get_draw' do
+  #   it 'returns draw info by tournament, player and round' do
+  #     stub_web(:get, 'http://chess-results.com/tnr502281.aspx?art=2&rd=1', 'tnr502281_rd5_draw.html')
+  #     expect(get_draw(tnr: 502281, snr: 4, rd: 1)).to eq(draw)
+  #   end
+  # end
+
+  # describe '#get_rank' do
+  #   it 'returns result by tournament, player and round' do
+  #     stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
+  #     expect(get_rank(tnr: 478864, snr: 11, rd: 1)).to eq(rank)
+  #   end
+  # end
 end

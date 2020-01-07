@@ -24,7 +24,7 @@ module Web
     return result
   end
 
-  def tournament_state(tournament)
+  def tournament_stage(tournament)
     result = {draw: 0, result: 0}
     search = {draw: 'Пары по доскам', result: 'Положение после'}
     page = get_content(URI("http://chess-results.com/tnr#{tournament.to_i}.aspx"))
@@ -37,32 +37,44 @@ module Web
     return result
   end
 
+  def stage_info(options)
+    info = {}
+    stage = options[:stage]
+    options[:art] = stage == :draw ? 2 : 1
+    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=%{art}&rd=%{rd}' % options))
+    info[:tournament] = page.xpath('(//h2)[1]').text.strip
+    options = {snr: options[:snr], info: info, page: page}
+    return stage == :draw ? get_draw(options) : get_rank(options)
+  end
+
   def get_draw(options)
-    result = {}
-    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=2&rd=%{rd}' % options))
-    result[:tournament] = page.xpath('(//h2)[1]').text.strip
-    result.merge!(page.xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
+    # result = {}
+    # page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=2&rd=%{rd}' % options))
+    # result[:tournament] = page.xpath('(//h2)[1]').text.strip
+    info = options[:info]
+    info.merge!(options[:page].xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
       named_captures.transform_keys(&:to_sym))
     row_indexes = {white_snr: 2, black_snr: 12, snr: options[:snr].to_i}
-    row = page.xpath(STRINGS[:row] % row_indexes).collect(&:text)
-    result[:desk] = row[0].to_i
-    result[:color] = row[1].to_i == options[:snr].to_i ? :white : :black
-    result[:player] = result[:color] == :white ? row[3].strip : row[9].strip
-    result[:opponent] = result[:color] == :white ? row[9].strip : row[3].strip
-    result[:rating] = result[:color] == :white ? row[10].to_i : row[4].to_i
-    return result
+    row = options[:page].xpath(STRINGS[:row] % row_indexes).collect(&:text)
+    info[:desk] = row[0].to_i
+    info[:color] = row[1].to_i == options[:snr].to_i ? :white : :black
+    info[:player] = info[:color] == :white ? row[3].strip : row[9].strip
+    info[:opponent] = info[:color] == :white ? row[9].strip : row[3].strip
+    info[:rating] = info[:color] == :white ? row[10].to_i : row[4].to_i
+    return info
   end
 
   def get_rank(options)
-    result = {}
-    page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=1&rd=%{rd}' % options))
-    result[:tournament] = page.xpath('(//h2)[1]').text.strip
-    row = page.xpath('//table[@class="CRs1"]/tr/td[2][normalize-space(text())=%d]/../td' % 
+    # result = {}
+    # page = get_content(URI('http://chess-results.com/tnr%{tnr}.aspx?art=1&rd=%{rd}' % options))
+    # result[:tournament] = page.xpath('(//h2)[1]').text.strip
+    info = options[:info]
+    row = options[:page].xpath('//table[@class="CRs1"]/tr/td[2][normalize-space(text())=%d]/../td' % 
       options[:snr].to_i).collect(&:text)
-    result[:player] = row[3].strip
-    result[:rank] = page.xpath('count(//table[@class="CRs1"]/tr/td[2]
+    info[:player] = row[3].strip
+    info[:rank] = options[:page].xpath('count(//table[@class="CRs1"]/tr/td[2]
       [normalize-space(text())=%d]/../preceding-sibling::*)' % options[:snr].to_i).to_i
-    return result
+    return info
   end
   # def search_players_on_site(player)
   #   load_params
