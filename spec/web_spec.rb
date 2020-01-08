@@ -28,6 +28,13 @@ describe Web do
         'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
         start_date: '2020/01/05', start_time: '14:00', finish_date: '2020/01/08'})
     end
+
+    it 'returns unknown dates' do
+      stub_web(:get, 'http://chess-results.com/tnr497805.aspx?lan=11&art=14', 'schedule_unknown.html')
+      expect(tournament_info(497805)).to eq({title: 
+        'Традиционный детский шахматный фестиваль "Русская Зима" - 2020', 
+        start_date: 'unknown', start_time: '', finish_date: 'unknown'})
+    end
   end
 
   describe '#tournament_stage' do
