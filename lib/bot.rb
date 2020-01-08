@@ -9,8 +9,7 @@ class Bot
   include Web
 
   def initialize(options)
-    @token = options[:token]
-    @logger = Logger.new(options[:log], 'monthly')
+    options.each{ |key, value| instance_variable_set("@#{key}", value) }
   end
 
   def listen

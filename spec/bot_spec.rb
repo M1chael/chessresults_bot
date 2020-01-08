@@ -2,7 +2,7 @@ require 'bot'
 require 'spec_helper'
 
 describe Bot, :logger, :telegram, :db do
-  let(:bot) { Bot.new(token: 'test_token', log: 'path/to/log') }
+  let(:bot) { Bot.new(token: 'test_token', logger: logger) }
   let(:tracker) { instance_double(Tracker) }
 
   before(:example) do
