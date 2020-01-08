@@ -18,6 +18,6 @@ class Tracker
   end
 
   def delete
-    
+    DB[:trackers].where(@options).delete
   end
 end

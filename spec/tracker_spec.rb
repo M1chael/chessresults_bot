@@ -40,4 +40,11 @@ describe Tracker, :db do
       expect(DB[:trackers][tracker_options][:draw]).to eq(7)
     end
   end
+
+  describe '#delete' do
+    it 'deletes tracker' do
+      @tracker.delete
+      expect(DB[:trackers][tracker_options]).to be_nil
+    end
+  end
 end
