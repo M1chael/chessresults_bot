@@ -60,18 +60,4 @@ describe Web do
       expect(stage_info(stage: :result, tnr: 478864, snr: 11, rd: 1)).to eq(rank)
     end   
   end
-
-  # describe '#get_draw' do
-  #   it 'returns draw info by tournament, player and round' do
-  #     stub_web(:get, 'http://chess-results.com/tnr502281.aspx?art=2&rd=1', 'tnr502281_rd5_draw.html')
-  #     expect(get_draw(tnr: 502281, snr: 4, rd: 1)).to eq(draw)
-  #   end
-  # end
-
-  # describe '#get_rank' do
-  #   it 'returns result by tournament, player and round' do
-  #     stub_web(:get, 'http://chess-results.com/tnr478864.aspx?art=1&rd=1', 'tnr478864_rd1_results.html')
-  #     expect(get_rank(tnr: 478864, snr: 11, rd: 1)).to eq(rank)
-  #   end
-  # end
 end
