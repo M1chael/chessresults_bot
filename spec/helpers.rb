@@ -52,7 +52,7 @@ module Helpers
     bot.read(msg)
   end
 
-  # def allow_now(datetime)
-  #   allow(DateTime).to receive(:now).and_return(datetime)
-  # end
+  def allow_today(date)
+    allow(Date).to receive(:today).and_return(date)
+  end
 end

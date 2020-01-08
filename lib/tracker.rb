@@ -16,4 +16,8 @@ class Tracker
     DB[:trackers].where(@options).update(options)
     @options.update(options)
   end
+
+  def delete
+    
+  end
 end

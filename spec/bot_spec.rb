@@ -167,6 +167,7 @@ describe Bot, :logger, :telegram, :db do
     before(:example) do
       DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
       allow(bot).to receive(:stage_info)
+      # allow(bot).to receive(:tournament_info)
       information[:color] = 'белыми'
     end
     # it 'sends text to uid' do
@@ -209,6 +210,12 @@ describe Bot, :logger, :telegram, :db do
       allow(bot).to receive(:stage_info).and_return(rank)
       expect(Tracker).to receive(:new).with(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
       expect(tracker).to receive(:update).with(result: 1)
+      bot.post
+    end
+
+    it 'removes tracker' do
+      allow_today(Date.parse('2020/01/09'))
+      expect(tracker).to receive(:delete)
       bot.post
     end
   end

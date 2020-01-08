@@ -71,14 +71,19 @@ class Bot
         @telegram = telegram
         DB[:trackers].each do |tracker|
           upd_tracker = Tracker.new(tracker)
-          stage = tournament_stage(tracker[:tnr])
-          stage.keys.each do |stage_name|
-            (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
-              info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
-              if !info.nil?
-                send_message(chat_id: tracker[:uid], 
-                  text: STRINGS[stage_name] % color(info))
-                upd_tracker.update(:"#{stage_name}"=>rd)
+          finish_date = Date.parse(tournament_info(tracker[:tnr])[:finish_date])
+          if Date.today > finish_date
+            upd_tracker.delete
+          else
+            stage = tournament_stage(tracker[:tnr])
+            stage.keys.each do |stage_name|
+              (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
+                info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
+                if !info.nil?
+                  send_message(chat_id: tracker[:uid], 
+                    text: STRINGS[stage_name] % color(info))
+                  upd_tracker.update(:"#{stage_name}"=>rd)
+                end
               end
             end
           end
