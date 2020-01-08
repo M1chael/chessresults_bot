@@ -34,10 +34,11 @@ class Bot
       else
         tournament = message.text.to_i
         players = list_players(tournament)
-        if players.size == 0
+        info = tournament_info(tournament)
+        if players.size == 0 || info[:finish_date] == 'unknown'
           send_message(text: STRINGS[:nothing_found])
         else
-          send_message(text: STRINGS[:choose_player] % tournament_info(tournament), 
+          send_message(text: STRINGS[:choose_player] % info, 
             reply_markup: markup(players))
         end
       end

@@ -32,10 +32,15 @@ describe Bot, :logger, :telegram, :db do
       expect_reply('/start', text: STRINGS[:hello])
     end
 
-    it 'says nothing found message' do
+    it 'says nothing found when there are no players' do
       allow(bot).to receive(:list_players).and_return([])
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])
     end
+
+    it 'says nothing found when there is no finish date' do
+      allow(bot).to receive(:tournament_info).and_return(finish_date: 'unknown')
+      expect_reply('wrongnumber', text: STRINGS[:nothing_found])
+    end   
 
     it 'lists players of tournament' do
       players.each do |player|
