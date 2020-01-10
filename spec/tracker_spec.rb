@@ -6,22 +6,37 @@ describe Tracker, :db do
     allow_any_instance_of(Web).to receive(:tournament_stage).
       and_return({draw: 3, result: 2})
     @tracker = Tracker.new(tracker_options)
-    @tracker.toggle
+    @result = @tracker.toggle
   end
 
   describe '#toggle' do
-    it 'sets new tracker' do
-      expect(DB[:trackers][tracker_options]).not_to be_nil
+    context 'when there is no tracker for the player' do
+      it 'sets new tracker' do
+        expect(DB[:trackers][tracker_options]).not_to be_nil
+      end
+
+      it 'returns :tracker_added' do
+        expect(@result).to eq(:tracker_added)
+      end
+
+      it 'sets current draw and result' do
+        expect(DB[:trackers][tracker_options][:draw]).to eq(3)
+        expect(DB[:trackers][tracker_options][:result]).to eq(2)
+      end
     end
 
-    it 'removes already setted tracker' do
-      Tracker.new(tracker_options).toggle
-      expect(DB[:trackers].where(tracker_options).all.size).to eq(0)
-    end
+    context 'when there is already setted tracker for the player' do
+      before(:example) do
+        @result = Tracker.new(tracker_options).toggle
+      end
 
-    it 'sets current draw and result' do
-      expect(DB[:trackers][tracker_options][:draw]).to eq(3)
-      expect(DB[:trackers][tracker_options][:result]).to eq(2)
+      it 'removes already setted tracker' do
+        expect(DB[:trackers].where(tracker_options).all.size).to eq(0)
+      end
+
+      it 'returns :tracker_deleted' do
+        expect(@result).to eq(:tracker_deleted)
+      end
     end
   end
 

@@ -79,7 +79,7 @@ describe Bot, :logger, :telegram, :db do
     context 'when inline button pressed' do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
-        allow(tracker).to receive(:toggle).and_return(:player_added)
+        allow(tracker).to receive(:toggle).and_return(:tracker_added)
         allow(msg).to receive(:reply_markup) { {inline_keyboard: [[{text: '1', callback_data: '1'}], 
           [{text:'2', callback_data: "#{tracker_options[:tnr]}:#{tracker_options[:snr]}"}]]} }
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
@@ -91,13 +91,13 @@ describe Bot, :logger, :telegram, :db do
       context 'when player button pressed' do
         it 'tracks player' do
           expect(Tracker).to receive(:new).with(tracker_options)
-          expect(tracker).to receive(:toggle).and_return(:player_added)
+          expect(tracker).to receive(:toggle).and_return(:tracker_added)
           bot.read(msg)
         end
 
         it 'shows notification about player tracking' do
           expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
-            text: STRINGS[:player_added])
+            text: STRINGS[:tracker_added])
           bot.read(msg)    
         end
 
@@ -111,18 +111,18 @@ describe Bot, :logger, :telegram, :db do
       context 'when delete button pressed' do
         before(:example) do
           DB[:trackers].insert(tracker_options)
-          allow(tracker).to receive(:toggle).and_return(:player_deleted)
+          allow(tracker).to receive(:toggle).and_return(:tracker_deleted)
         end
 
         it 'untracks player' do
           expect(Tracker).to receive(:new).with(tracker_options)
-          expect(tracker).to receive(:toggle).and_return(:player_deleted)
+          expect(tracker).to receive(:toggle).and_return(:tracker_deleted)
           bot.read(msg)          
         end
 
         it 'shows notification about player untracking' do
           expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
-            text: STRINGS[:player_deleted])
+            text: STRINGS[:tracker_deleted])
           bot.read(msg)                  
         end
 

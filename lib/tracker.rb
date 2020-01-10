@@ -9,9 +9,13 @@ class Tracker
   end
 
   def toggle
-    DB[:trackers][@options].nil? ? 
-      DB[:trackers].insert(@options.merge(tournament_stage(@options[:tnr]))) :
+    if DB[:trackers][@options].nil?
+      DB[:trackers].insert(@options.merge(tournament_stage(@options[:tnr])))
+      return :tracker_added
+    else
       delete
+      return :tracker_deleted
+    end
   end
 
   def update(options)

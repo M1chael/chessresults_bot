@@ -63,7 +63,7 @@ class Bot
       result = tracker.toggle
       @telegram.api.answer_callback_query(callback_query_id: message.id, 
         text: STRINGS[result])
-      if result == :player_added
+      if result == :tracker_added
         markup = message.reply_markup.to_h
         markup[:delete] = message.data
         @telegram.api.edit_message_reply_markup(chat_id: @uid, message_id: message.id,
