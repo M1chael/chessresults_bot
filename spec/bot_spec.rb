@@ -44,6 +44,10 @@ describe Bot, :logger, :telegram, :db do
         end
     end
 
+    it 'says no trackers' do
+      expect_reply('/list', text: STRINGS[:notrackers])
+    end
+
     it 'says nothing found when there are no players' do
       allow(bot).to receive(:list_players).and_return([])
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])

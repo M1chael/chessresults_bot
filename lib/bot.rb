@@ -31,9 +31,14 @@ class Bot
       if message.text == '/start'
         send_message(text: STRINGS[:hello]) 
       elsif message.text == '/list'
-        DB[:trackers].where(uid: @uid).all.each do |tracker|
-          send_message(text: STRINGS[:tracker] % tracker_info(tracker), 
-            reply_markup: markup(tracker: tracker))
+        trackers = DB[:trackers].where(uid: @uid).all
+        if trackers.size == 0
+          send_message(text: STRINGS[:notrackers])
+        else
+          trackers.each do |tracker|
+            send_message(text: STRINGS[:tracker] % tracker_info(tracker), 
+              reply_markup: markup(tracker: tracker))
+          end
         end
       else
         tournament = message.text.to_i

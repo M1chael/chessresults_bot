@@ -45,3 +45,5 @@ STRINGS[:tracker] = <<~TR
   Турнир: %{tournament}
   Участник: %{name} 
 TR
+
+STRINGS[:notrackers] = 'В вашем списке отслеживания нет ни одного игрока'
