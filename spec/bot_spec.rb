@@ -13,7 +13,6 @@ describe Bot, :logger, :telegram, :db do
     allow(tracker).to receive(:toggle)
     allow(tracker).to receive(:update)
     allow(tracker).to receive(:delete)
-    allow(bot).to receive(:tracker_info)
   end
 
   describe '#read' do
@@ -107,7 +106,8 @@ describe Bot, :logger, :telegram, :db do
         end
 
         it 'deletes message with deleted tracker' do
-
+          expect(api).to receive(:delete_message).with(chat_id: 1, message_id: 10)
+          bot.read(msg)                  
         end
       end
     end

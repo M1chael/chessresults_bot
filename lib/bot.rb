@@ -58,6 +58,7 @@ class Bot
       result = tracker.toggle
       @telegram.api.answer_callback_query(callback_query_id: message.id, 
         text: STRINGS[result])
+      @telegram.api.delete_message(chat_id: @uid, message_id: message.id) if result == :player_deleted
     end
   end
 
