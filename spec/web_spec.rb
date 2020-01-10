@@ -51,13 +51,25 @@ describe Web do
 
   describe '#stage_info' do
     it 'returns draw info by tournament, player and round' do
-      stub_web(:get, 'http://chess-results.com/tnr502281.aspx?lan=11&art=2&rd=1', 'tnr502281_rd5_draw.html')
+      stub_web(:get, 'http://chess-results.com/tnr502281.aspx?lan=11&art=2&rd=1', 
+        'tnr502281_rd5_draw.html')
       expect(stage_info(stage: :draw, tnr: 502281, snr: 4, rd: 1)).to eq(draw)
     end
 
    it 'returns rank by tournament, player and round' do
-      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?lan=11&art=1&rd=1', 'tnr478864_rd1_results.html')
+      stub_web(:get, 'http://chess-results.com/tnr478864.aspx?lan=11&art=1&rd=1', 
+        'tnr478864_rd1_results.html')
       expect(stage_info(stage: :result, tnr: 478864, snr: 11, rd: 1)).to eq(rank)
     end   
+  end
+
+  describe '#tracker_info' do
+    it 'returns tracker info' do
+      stub_web(:get, 'http://chess-results.com/tnr502281.aspx?lan=11&art=9&snr=8', 
+        'snr.html')
+      expect(tracker_info(uid: 1, tnr: 502281, snr: 8, draw: 0, result: 0)).to eq(tournament: 
+        'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199',
+        name: 'Алипов Давид')
+    end
   end
 end

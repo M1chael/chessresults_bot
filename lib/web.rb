@@ -37,6 +37,15 @@ module Web
     return result
   end
 
+  def tracker_info(options)
+    result = {}
+    page = get_content(URI(
+      'http://chess-results.com/tnr%{tnr}.aspx?lan=11&art=9&snr=%{snr}' % options))
+    result[:tournament] = page.xpath('(//h2)[1]').text.strip
+    result[:name] = page.xpath('//table[@class="CRs1"][1]/tr[1]/td[2]').text.strip
+    return result
+  end
+
   def stage_info(options)
     options[:info] = {rd: options[:rd]}
     stage = options[:stage]
