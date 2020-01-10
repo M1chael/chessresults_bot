@@ -40,3 +40,8 @@ STRINGS[:player_added] = 'Игрок добавлен в список отсле
 
 STRINGS[:row] = '//table[@class="CRs1"]/tr/td[%{white_snr}][normalize-space(text())=%{snr}]/../td | 
   //table[@class="CRs1"]/tr/td[%{black_snr}][normalize-space(text())=%{snr}]/../td'
+
+STRINGS[:tracker] = <<~TR
+  Турнир: %{tournament}
+  Участник: %{name} 
+TR

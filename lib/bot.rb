@@ -30,6 +30,11 @@ class Bot
       @uid = message.chat.id
       if message.text == '/start'
         send_message(text: STRINGS[:hello]) 
+      elsif message.text == '/list'
+        DB[:trackers].where(uid: @uid).all.each do |tracker|
+          send_message(text: STRINGS[:tracker] % tracker_info(tracker), 
+            reply_markup: markup(tracker: tracker))
+        end
       else
         tournament = message.text.to_i
         players = list_players(tournament)
@@ -38,7 +43,7 @@ class Bot
           send_message(text: STRINGS[:nothing_found])
         else
           send_message(text: STRINGS[:choose_player] % info, 
-            reply_markup: markup(players))
+            reply_markup: markup(players: players))
         end
       end
     elsif message.respond_to?(:data)
@@ -88,11 +93,17 @@ class Bot
     @telegram.api.send_message(options)
   end
 
-  def markup(players)
+  def markup(options)
     kb = []
-    players.each do |player| 
-      kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: player[:name],
-        callback_data: player[:snr])]
+
+    if !options[:players].nil?
+      options[:players].each do |player| 
+        kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: player[:name],
+          callback_data: player[:snr])]
+      end
+    else
+      kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Удалить',
+        callback_data: '%{tnr}:%{snr}' % options[:tracker])]
     end
     return Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
   end

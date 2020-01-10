@@ -13,11 +13,35 @@ describe Bot, :logger, :telegram, :db do
     allow(tracker).to receive(:set)
     allow(tracker).to receive(:update)
     allow(tracker).to receive(:delete)
+    allow(bot).to receive(:tracker_info)
   end
 
   describe '#read' do
     it 'says hello' do
       expect_reply('/start', text: STRINGS[:hello])
+    end
+
+    it 'lists trackers' do
+      trackers = [{uid: 1, tnr: 2, snr: 3, draw: 0, result: 0}, 
+        {uid: 1, tnr: 2, snr: 1, draw: 1, result: 2}]
+      trackers.each do|tracker| 
+        DB[:trackers].insert(tracker)
+        tracker_info = {tournament: "tournament#{tracker[:tnr]}",
+          name: "player#{tracker[:snr]}"}
+        allow(bot).to receive(:tracker_info).with(tracker).and_return(tracker_info)
+        allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+          with(text: 'Удалить', callback_data: '%{tnr}:%{snr}' % tracker).
+          and_return('%{tnr}:%{snr}' % tracker)
+        allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
+          with(inline_keyboard: [['%{tnr}:%{snr}' % tracker]]).
+          and_return('%{tnr}:%{snr}' % tracker)
+      end
+      trackers.each do |tracker|
+        tracker_info = {tournament: "tournament#{tracker[:tnr]}",
+          name: "player#{tracker[:snr]}"}
+        expect_reply('/list', text: STRINGS[:tracker] % tracker_info, 
+          reply_markup: '%{tnr}:%{snr}' % tracker)
+        end
     end
 
     it 'says nothing found when there are no players' do
