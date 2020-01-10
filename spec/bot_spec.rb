@@ -80,10 +80,10 @@ describe Bot, :logger, :telegram, :db do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
         allow(tracker).to receive(:toggle).and_return(:tracker_added)
-        allow(msg).to receive(:reply_markup) { {inline_keyboard: [[{text: '1', callback_data: '1'}], 
-          [{text:'2', callback_data: "#{tracker_options[:tnr]}:#{tracker_options[:snr]}"}]]} }
+        allow(message).to receive(:reply_markup) { {inline_keyboard: [[{'text'=> '1', 'callback_data'=> '1'}], 
+          [{'text'=>'2', 'callback_data'=> "#{tracker_options[:tnr]}:#{tracker_options[:snr]}"}]]} }
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
-          with(text: '1', callback_data: '1') { '1' }
+          with('text'=> '1', 'callback_data'=> '1') { '1' }
         allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
           with(inline_keyboard: [['1']]).and_return('kb')
       end

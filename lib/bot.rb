@@ -64,12 +64,12 @@ class Bot
       @telegram.api.answer_callback_query(callback_query_id: message.id, 
         text: STRINGS[result])
       if result == :tracker_added
-        markup = message.reply_markup.to_h
+        markup = message.message.reply_markup.to_h
         markup[:delete] = message.data
-        @telegram.api.edit_message_reply_markup(chat_id: @uid, message_id: message.id,
-          reply_markup: markup(markup))
+        @telegram.api.edit_message_reply_markup(chat_id: @uid, 
+          message_id: message.message.message_id, reply_markup: markup(markup))
       else
-        @telegram.api.delete_message(chat_id: @uid, message_id: message.id)
+        @telegram.api.delete_message(chat_id: @uid, message_id: message.message.message_id)
       end
     end
   end
@@ -124,7 +124,7 @@ class Bot
       options[:inline_keyboard].each do |row|
         new_row = []
         row.each do |button|
-          new_row << get_button(button) if button[:callback_data] != options[:delete]
+          new_row << get_button(button) if button['callback_data'] != options[:delete]
         end
         kb << new_row if new_row.size > 0
       end

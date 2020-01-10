@@ -29,7 +29,9 @@ RSpec.configure do |c|
     allow(from).to receive(:id) { 1 }
     allow(msg).to receive(:id) { 10 }
     allow(msg).to receive(:chat) { chat }
-    allow(msg).to receive(:reply_markup)
+    allow(msg).to receive(:message) { message }
+    allow(message).to receive(:reply_markup)
+    allow(message).to receive(:message_id) { 10 }
     allow(chat).to receive(:id) { 1 }
     allow(telegram).to receive(:api) { api }
     allow(api).to receive(:send_message)

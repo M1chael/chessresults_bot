@@ -10,6 +10,7 @@ module Helpers
   let(:api) { double }
   let(:from) { double }
   let(:msg) { double(Telegram::Bot::Types::Message) }
+  let(:message) { double }
   let(:players) {[{snr: '123:1', name: 'Участник № 1'}, {snr: '123:2', name: 'Участник № 2'}]}
   let(:tournament) { {
     title: 'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', 
