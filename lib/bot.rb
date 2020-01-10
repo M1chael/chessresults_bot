@@ -58,7 +58,14 @@ class Bot
       result = tracker.toggle
       @telegram.api.answer_callback_query(callback_query_id: message.id, 
         text: STRINGS[result])
-      @telegram.api.delete_message(chat_id: @uid, message_id: message.id) if result == :player_deleted
+      if result == :player_added
+        markup = message.reply_markup.to_h
+        markup[:delete] = message.data
+        @telegram.api.edit_message_reply_markup(chat_id: @uid, message_id: message.id,
+          reply_markup: markup(markup))
+      else
+        @telegram.api.delete_message(chat_id: @uid, message_id: message.id)
+      end
     end
   end
 
@@ -104,14 +111,24 @@ class Bot
 
     if !options[:players].nil?
       options[:players].each do |player| 
-        kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: player[:name],
-          callback_data: player[:snr])]
+        kb << [get_button(text: player[:name], callback_data: player[:snr])]
       end
+    elsif !options[:tracker].nil?
+      kb << [get_button(text: 'Удалить', callback_data: '%{tnr}:%{snr}' % options[:tracker])]
     else
-      kb << [Telegram::Bot::Types::InlineKeyboardButton.new(text: 'Удалить',
-        callback_data: '%{tnr}:%{snr}' % options[:tracker])]
+      options[:inline_keyboard].each do |row|
+        new_row = []
+        row.each do |button|
+          new_row << get_button(button) if button[:callback_data] != options[:delete]
+        end
+        kb << new_row if new_row.size > 0
+      end
     end
     return Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+  end
+
+  def get_button(options)
+    Telegram::Bot::Types::InlineKeyboardButton.new(options)
   end
 
   def color(info)

@@ -71,6 +71,12 @@ describe Bot, :logger, :telegram, :db do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
         allow(tracker).to receive(:toggle).and_return(:player_added)
+        allow(msg).to receive(:reply_markup) { {inline_keyboard: [[{text: '1', callback_data: '1'}], 
+          [{text:'2', callback_data: "#{tracker_options[:tnr]}:#{tracker_options[:snr]}"}]]} }
+        allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+          with(text: '1', callback_data: '1') { '1' }
+        allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
+          with(inline_keyboard: [['1']]).and_return('kb')
       end
 
       context 'when player button pressed' do
@@ -83,7 +89,13 @@ describe Bot, :logger, :telegram, :db do
         it 'shows notification about player tracking' do
           expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
             text: STRINGS[:player_added])
-          bot.read(msg)        
+          bot.read(msg)    
+        end
+
+        it 'updates markup' do
+          expect(api).to receive(:edit_message_reply_markup).with(chat_id: 1, message_id: 10,
+            reply_markup: 'kb')          
+          bot.read(msg)    
         end
       end
 
