@@ -10,7 +10,7 @@ describe Bot, :logger, :telegram, :db do
     allow(bot).to receive(:list_players).and_return(players)
     allow(bot).to receive(:tournament_info).and_return(tournament)
     allow(Tracker).to receive(:new).and_return(tracker)
-    allow(tracker).to receive(:set)
+    allow(tracker).to receive(:toggle)
     allow(tracker).to receive(:update)
     allow(tracker).to receive(:delete)
     allow(bot).to receive(:tracker_info)
@@ -68,21 +68,44 @@ describe Bot, :logger, :telegram, :db do
       expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 
-    context 'when player button pressed' do
+    context 'when inline button pressed' do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
+        allow(tracker).to receive(:toggle).and_return(:player_added)
       end
 
-      it 'tracks player' do
-        expect(Tracker).to receive(:new).with(tracker_options)
-        expect(tracker).to receive(:set)
-        bot.read(msg)
+      context 'when player button pressed' do
+        it 'tracks player' do
+          expect(Tracker).to receive(:new).with(tracker_options)
+          expect(tracker).to receive(:toggle).and_return(:player_added)
+          bot.read(msg)
+        end
+
+        it 'shows notification about player tracking' do
+          expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
+            text: STRINGS[:player_added])
+          bot.read(msg)        
+        end
       end
 
-      it 'shows notification about player tracking' do
-        expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
-          text: STRINGS[:player_added])
-        bot.read(msg)        
+      context 'when delete button pressed' do
+        before(:example) do
+          DB[:trackers].insert(tracker_options)
+        end
+
+        it 'untracks player' do
+          expect(Tracker).to receive(:new).with(tracker_options)
+          expect(tracker).to receive(:toggle).and_return(:player_deleted)
+          bot.read(msg)          
+        end
+
+        it 'shows notification about player untracking' do
+
+        end
+
+        it 'deletes message with deleted tracker' do
+
+        end
       end
     end
   end

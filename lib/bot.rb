@@ -55,9 +55,9 @@ class Bot
       @uid = message.from.id
       tnr, snr = message.data.split(':').map(&:to_i)
       tracker = Tracker.new(uid: @uid, tnr: tnr, snr: snr)
-      tracker.set
+      result = tracker.toggle
       @telegram.api.answer_callback_query(callback_query_id: message.id, 
-        text: STRINGS[:player_added])
+        text: STRINGS[result])
     end
   end
 
