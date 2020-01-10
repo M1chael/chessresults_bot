@@ -12,6 +12,7 @@ describe Bot, :logger, :telegram, :db do
     allow(Tracker).to receive(:new).and_return(tracker)
     allow(tracker).to receive(:set)
     allow(tracker).to receive(:update)
+    allow(tracker).to receive(:delete)
   end
 
   describe '#read' do
@@ -62,6 +63,7 @@ describe Bot, :logger, :telegram, :db do
     let(:information) { draw.dup }
       
     before(:example) do
+      allow_today(Date.parse('2020/01/07'))
       DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
       allow(bot).to receive(:stage_info)
       information[:color] = 'белыми'
