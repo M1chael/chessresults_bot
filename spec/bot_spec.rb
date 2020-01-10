@@ -57,13 +57,22 @@ describe Bot, :logger, :telegram, :db do
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])
     end   
 
-    it 'lists players of tournament' do
+    it 'lists all players of tournament if there are no already setted trackers' do
       players.each do |player|
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
           with(text: player[:name], callback_data: player[:snr]).and_return(player[:name])
       end
       allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
         with(inline_keyboard: [[players[0][:name]], [players[1][:name]]]).and_return('kb')
+      expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
+    end
+
+    it 'lists all players of tournament except already tracked' do
+      allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
+        with(text: players[1][:name], callback_data: players[1][:snr]).and_return(players[1][:name])
+      allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
+        with(inline_keyboard: [[players[1][:name]]]).and_return('kb')
+      DB[:trackers].insert(uid: 1, tnr: 123, snr: 1, draw: 0, result: 0)
       expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 

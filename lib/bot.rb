@@ -28,10 +28,10 @@ class Bot
   def read(message)
     if message.respond_to?(:text)
       @uid = message.chat.id
+      trackers = DB[:trackers].where(uid: @uid).all
       if message.text == '/start'
-        send_message(text: STRINGS[:hello]) 
+        send_message(text: STRINGS[:hello])
       elsif message.text == '/list'
-        trackers = DB[:trackers].where(uid: @uid).all
         if trackers.size == 0
           send_message(text: STRINGS[:notrackers])
         else
@@ -42,7 +42,12 @@ class Bot
         end
       else
         tournament = message.text.to_i
-        players = list_players(tournament)
+        players = list_players(tournament).
+          delete_if do |player| 
+            trackers.any? do |tracker| 
+              "#{tracker[:tnr]}:#{tracker[:snr]}" == player[:snr]
+            end
+          end
         info = tournament_info(tournament)
         if players.size == 0 || info[:finish_date] == 'unknown'
           send_message(text: STRINGS[:nothing_found])
