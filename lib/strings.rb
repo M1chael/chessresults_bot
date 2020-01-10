@@ -38,6 +38,8 @@ NF
 
 STRINGS[:player_added] = 'Игрок добавлен в список отслеживания'
 
+STRINGS[:player_deleted] = 'Игрок удалён из списка отслеживания'
+
 STRINGS[:row] = '//table[@class="CRs1"]/tr/td[%{white_snr}][normalize-space(text())=%{snr}]/../td | 
   //table[@class="CRs1"]/tr/td[%{black_snr}][normalize-space(text())=%{snr}]/../td'
 

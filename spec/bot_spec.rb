@@ -91,6 +91,7 @@ describe Bot, :logger, :telegram, :db do
       context 'when delete button pressed' do
         before(:example) do
           DB[:trackers].insert(tracker_options)
+          allow(tracker).to receive(:toggle).and_return(:player_deleted)
         end
 
         it 'untracks player' do
@@ -100,7 +101,9 @@ describe Bot, :logger, :telegram, :db do
         end
 
         it 'shows notification about player untracking' do
-
+          expect(api).to receive(:answer_callback_query).with(callback_query_id: 10,
+            text: STRINGS[:player_deleted])
+          bot.read(msg)                  
         end
 
         it 'deletes message with deleted tracker' do
