@@ -42,4 +42,13 @@ RSpec.configure do |c|
     allow(bot).to receive(:tracker_info)
     allow(api).to receive(:delete_message)
   end
+
+  c.before(:example, :tracker) do
+    allow(Tracker).to receive(:new) {tracker_instance}
+    allow(Tracker).to receive(:list_trackers) {[]}
+    allow(tracker_instance).to receive(:toggle)
+    allow(tracker_instance).to receive(:update)
+    allow(tracker_instance).to receive(:delete)
+    allow(tracker_instance).to receive(:info)
+  end
 end

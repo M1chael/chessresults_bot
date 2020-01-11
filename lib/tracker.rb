@@ -30,4 +30,8 @@ class Tracker
   def self.list_trackers(options={})
     DB[:trackers].where(options).all
   end
+
+  def info
+    return tracker_info(@options)
+  end
 end

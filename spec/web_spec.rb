@@ -4,6 +4,12 @@ require 'spec_helper'
 describe Web do
   include Web
 
+  let(:draw) { {tournament: 
+    'Традиционный детский шахматный фестиваль "Русская Зима". Турнир D. Рейтинг 1120-1199', rd: 1,
+    date: '2020/01/07', time: '12:30', 
+    player: 'Бондарев Илья', color: :white, desk: 6, 
+    opponent: 'Попуца Дмитрий', rating: 1133} }
+
   describe '#list_players' do
     before(:example) do
       stub_web(:get, %r{\Ahttp://chess-results.com/tnr\d+.aspx\?art=3&lan=11&zeilen=99999\z}, 'tnr478864.html')

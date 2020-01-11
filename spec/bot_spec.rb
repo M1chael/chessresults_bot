@@ -1,18 +1,15 @@
 require 'bot'
 require 'spec_helper'
 
-describe Bot, :logger, :telegram, :db do
+describe Bot, :logger, :telegram, :tracker do
   let(:bot) { Bot.new(token: 'test_token', logger: logger) }
-  let(:tracker) { instance_double(Tracker) }
+  let(:tnr) { instance_double(Tournament) }
 
   before(:example) do
     bot.instance_variable_set(:@telegram, telegram)
-    allow(bot).to receive(:list_players).and_return(players)
-    allow(bot).to receive(:tournament_info).and_return(tournament)
-    allow(Tracker).to receive(:new).and_return(tracker)
-    allow(tracker).to receive(:toggle)
-    allow(tracker).to receive(:update)
-    allow(tracker).to receive(:delete)
+    allow(tnr).to receive(:list_players_for_user) {players}
+    allow(tnr).to receive(:info) {tournament}
+    allow(Tournament).to receive(:new) {tnr}
   end
 
   describe '#read' do
@@ -23,11 +20,8 @@ describe Bot, :logger, :telegram, :db do
     it 'lists trackers' do
       trackers = [{uid: 1, tnr: 2, snr: 3, draw: 0, result: 0}, 
         {uid: 1, tnr: 2, snr: 1, draw: 1, result: 2}]
+      allow(Tracker).to receive(:list_trackers) {trackers}
       trackers.each do|tracker| 
-        DB[:trackers].insert(tracker)
-        tracker_info = {tournament: "tournament#{tracker[:tnr]}",
-          name: "player#{tracker[:snr]}"}
-        allow(bot).to receive(:tracker_info).with(tracker).and_return(tracker_info)
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
           with(text: 'Удалить', callback_data: '%{tnr}:%{snr}' % tracker).
           and_return('%{tnr}:%{snr}' % tracker)
@@ -38,6 +32,7 @@ describe Bot, :logger, :telegram, :db do
       trackers.each do |tracker|
         tracker_info = {tournament: "tournament#{tracker[:tnr]}",
           name: "player#{tracker[:snr]}"}
+        allow(tracker_instance).to receive(:info).and_return(tracker_info)
         expect_reply('/list', text: STRINGS[:tracker] % tracker_info, 
           reply_markup: '%{tnr}:%{snr}' % tracker)
         end
@@ -48,12 +43,12 @@ describe Bot, :logger, :telegram, :db do
     end
 
     it 'says nothing found when there are no players' do
-      allow(bot).to receive(:list_players).and_return([])
+      allow(tnr).to receive(:list_players_for_user) {[]}
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])
     end
 
     it 'says nothing found when there is no finish date' do
-      allow(bot).to receive(:tournament_info).and_return(finish_date: 'unknown')
+      allow(tnr).to receive(:info) {{finish_date: 'unknown'}}
       expect_reply('wrongnumber', text: STRINGS[:nothing_found])
     end   
 
@@ -67,19 +62,19 @@ describe Bot, :logger, :telegram, :db do
       expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 
-    it 'lists all players of tournament except already tracked' do
+    it 'lists all players of tournament without already tracked' do
       allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
         with(text: players[1][:name], callback_data: players[1][:snr]).and_return(players[1][:name])
       allow(Telegram::Bot::Types::InlineKeyboardMarkup).to receive(:new).
         with(inline_keyboard: [[players[1][:name]]]).and_return('kb')
-      DB[:trackers].insert(uid: 1, tnr: 123, snr: 1, draw: 0, result: 0)
+      allow(tnr).to receive(:list_players_for_user) {[players[1]]}
       expect_reply('123', text: STRINGS[:choose_player] % tournament, reply_markup: 'kb')
     end
 
     context 'when inline button pressed' do
       before(:example) do
         allow(msg).to receive(:data) { "#{tracker_options[:tnr]}:#{tracker_options[:snr]}" }
-        allow(tracker).to receive(:toggle).and_return(:tracker_added)
+        allow(tracker_instance).to receive(:toggle) {:tracker_added}
         allow(message).to receive(:reply_markup) { {inline_keyboard: [[{'text'=> '1', 'callback_data'=> '1'}], 
           [{'text'=>'2', 'callback_data'=> "#{tracker_options[:tnr]}:#{tracker_options[:snr]}"}]]} }
         allow(Telegram::Bot::Types::InlineKeyboardButton).to receive(:new).
@@ -91,7 +86,7 @@ describe Bot, :logger, :telegram, :db do
       context 'when player button pressed' do
         it 'tracks player' do
           expect(Tracker).to receive(:new).with(tracker_options)
-          expect(tracker).to receive(:toggle).and_return(:tracker_added)
+          expect(tracker_instance).to receive(:toggle).and_return(:tracker_added)
           bot.read(msg)
         end
 
@@ -110,13 +105,12 @@ describe Bot, :logger, :telegram, :db do
 
       context 'when delete button pressed' do
         before(:example) do
-          DB[:trackers].insert(tracker_options)
-          allow(tracker).to receive(:toggle).and_return(:tracker_deleted)
+          allow(tracker_instance).to receive(:toggle) {:tracker_deleted}
         end
 
         it 'untracks player' do
           expect(Tracker).to receive(:new).with(tracker_options)
-          expect(tracker).to receive(:toggle).and_return(:tracker_deleted)
+          expect(tracker_instance).to receive(:toggle).and_return(:tracker_deleted)
           bot.read(msg)          
         end
 
@@ -135,52 +129,47 @@ describe Bot, :logger, :telegram, :db do
   end
 
   describe '#post' do
-    let(:information) { draw.dup }
-      
     before(:example) do
       allow_today(Date.parse('2020/01/07'))
-      DB[:trackers].insert(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
-      allow(bot).to receive(:stage_info)
-      information[:color] = 'белыми'
+      allow(tnr).to receive(:results)
+      allow(Tracker).to receive(:list_trackers) {[{uid: 1, tnr: 2, snr: 3, draw: 0, result: 0}]}
     end
 
     it 'sends message about draw' do
-      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 1, result: 0)
-      allow(bot).to receive(:stage_info).with(stage: :draw, tnr: 2, snr: 3, rd: 1).
-        and_return(draw)
-      expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
-        text: STRINGS[:draw] % information)
+      allow(tnr).to receive(:stage) {{draw: 1, result: 0}}
+      allow(tnr).to receive(:results).with(stage: :draw, snr: 3, rd: 1) {draw}
+      expect(api).to receive(:send_message).with(chat_id: 1, parse_mode: 'HTML', 
+        text: STRINGS[:draw] % draw)
       bot.post
     end
 
     it 'sends message about result' do
-      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 0, result: 1)
-      allow(bot).to receive(:stage_info).with(stage: :result, tnr: 2, snr: 3, rd: 1).
-        and_return(rank)
-       expect(api).to receive(:send_message).with(chat_id: 1, :parse_mode=>"HTML", 
+      allow(tnr).to receive(:stage) {{draw: 0, result: 1}}
+      allow(tnr).to receive(:results).with(stage: :result, snr: 3, rd: 1) {rank}
+      expect(api).to receive(:send_message).with(chat_id: 1, parse_mode: 'HTML', 
         text: STRINGS[:result] % rank)
       bot.post           
     end
 
     it 'sends messages about multiple draws and results' do
-      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 3, result: 2)
-      allow(bot).to receive(:stage_info).with(hash_including(stage: :draw)).and_return(draw)
-      allow(bot).to receive(:stage_info).with(hash_including(stage: :result)).and_return(rank)
+      allow(tnr).to receive(:stage) {{draw: 3, result: 2}}
+      allow(tnr).to receive(:results).with(hash_including(stage: :draw)) {draw}
+      allow(tnr).to receive(:results).with(hash_including(stage: :result)) {rank}
       expect(api).to receive(:send_message).exactly(5).times
       bot.post           
     end
 
     it 'updates tracker' do
-      allow(bot).to receive(:tournament_stage).with(2).and_return(draw: 0, result: 1)
-      allow(bot).to receive(:stage_info).and_return(rank)
+      allow(tnr).to receive(:stage) {{draw: 0, result: 1}}
+      allow(tnr).to receive(:results) {rank}
       expect(Tracker).to receive(:new).with(uid: 1, tnr: 2, snr: 3, draw: 0, result: 0)
-      expect(tracker).to receive(:update).with(result: 1)
+      expect(tracker_instance).to receive(:update).with(result: 1)
       bot.post
     end
 
     it 'removes tracker' do
       allow_today(Date.parse('2020/01/09'))
-      expect(tracker).to receive(:delete)
+      expect(tracker_instance).to receive(:delete)
       bot.post
     end
   end

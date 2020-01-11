@@ -3,8 +3,7 @@ require 'spec_helper'
 
 describe Tracker, :db do
   before(:example) do
-    allow_any_instance_of(Web).to receive(:tournament_stage).
-      and_return({draw: 3, result: 2})
+    allow_any_instance_of(Web).to receive(:tournament_stage) {{draw: 3, result: 2}}
     @tracker = Tracker.new(tracker_options)
     @result = @tracker.toggle
   end
@@ -76,6 +75,13 @@ describe Tracker, :db do
 
     it 'filters list of trackers by uid' do
       expect(Tracker.list_trackers(uid: 2)).to eq([@tracker])
+    end
+  end
+
+  describe '#info' do
+    it 'returns Web#tracker_info' do
+      expect(@tracker).to receive(:tracker_info).with(tracker_options)
+      @tracker.info
     end
   end
 end

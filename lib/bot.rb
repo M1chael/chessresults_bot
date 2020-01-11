@@ -2,7 +2,7 @@ require 'telegram/bot'
 require 'logger'
 require 'date'
 require_relative 'strings'
-require_relative 'web'
+require 'tournament'
 require_relative 'tracker'
 
 class Bot
@@ -29,7 +29,6 @@ class Bot
     if message.respond_to?(:text)
       @uid = message.chat.id
       trackers = Tracker.list_trackers(uid: @uid)
-      # trackers = DB[:trackers].where(uid: @uid).all
       if message.text == '/start'
         send_message(text: STRINGS[:hello])
       elsif message.text == '/list'
@@ -37,19 +36,14 @@ class Bot
           send_message(text: STRINGS[:notrackers])
         else
           trackers.each do |tracker|
-            send_message(text: STRINGS[:tracker] % tracker_info(tracker), 
+            send_message(text: STRINGS[:tracker] % Tracker.new(tracker).info, 
               reply_markup: markup(tracker: tracker))
           end
         end
       else
-        tournament = message.text.to_i
-        players = list_players(tournament).
-          delete_if do |player| 
-            trackers.any? do |tracker| 
-              "#{tracker[:tnr]}:#{tracker[:snr]}" == player[:snr]
-            end
-          end
-        info = tournament_info(tournament)
+        tournament = Tournament.new(message.text.to_i)
+        players = tournament.list_players_for_user(@uid)
+        info = tournament.info
         if players.size == 0 || info[:finish_date] == 'unknown'
           send_message(text: STRINGS[:nothing_found])
         else
@@ -80,19 +74,19 @@ class Bot
       Telegram::Bot::Client.run(@token, logger: @logger) do |telegram|
         @telegram = telegram
         Tracker.list_trackers.each do |tracker|
-        # DB[:trackers].each do |tracker|
+          tournament = Tournament.new(tracker[:tnr])
           upd_tracker = Tracker.new(tracker)
-          finish_date = Date.parse(tournament_info(tracker[:tnr])[:finish_date])
+          finish_date = Date.parse(tournament.info[:finish_date])
           if Date.today > finish_date
             upd_tracker.delete
           else
-            stage = tournament_stage(tracker[:tnr])
+            stage = tournament.stage
             stage.keys.each do |stage_name|
               (tracker[stage_name] + 1..stage[stage_name]).each do |rd|
-                info = stage_info(stage: stage_name, tnr: tracker[:tnr], snr: tracker[:snr], rd: rd)
+                info = tournament.results(stage: stage_name, snr: tracker[:snr], rd: rd)
                 if !info.nil?
                   send_message(chat_id: tracker[:uid], 
-                    text: STRINGS[stage_name] % color(info))
+                    text: STRINGS[stage_name] % info)
                   upd_tracker.update(:"#{stage_name}"=>rd)
                 end
               end
@@ -136,13 +130,5 @@ class Bot
 
   def get_button(options)
     Telegram::Bot::Types::InlineKeyboardButton.new(options)
-  end
-
-  def color(info)
-    if !info[:color].nil?
-      colors = {white: 'белыми', black: 'чёрными'}
-      info[:color] = colors[info[:color]]
-    end
-    return info
   end
 end

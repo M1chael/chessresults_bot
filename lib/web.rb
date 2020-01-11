@@ -57,7 +57,7 @@ module Web
 
   def get_draw(options)
     info = options[:info]
-    info.merge!(options[:page].xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+:\d+)/).
+    info.merge!(options[:page].xpath('//h3').text.match(/(?<date>\d+\/\d+\/\d+) в (?<time>\d+(:|\.)\d+)/).
       named_captures.transform_keys(&:to_sym))
     row_indexes = {white_snr: 2, black_snr: 12, snr: options[:snr].to_i}
     row = options[:page].xpath(STRINGS[:row] % row_indexes).collect(&:text)
