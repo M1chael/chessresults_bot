@@ -26,4 +26,8 @@ class Tracker
   def delete
     DB[:trackers].where(@options).delete
   end
+
+  def self.list_trackers(options={})
+    DB[:trackers].where(options).all
+  end
 end

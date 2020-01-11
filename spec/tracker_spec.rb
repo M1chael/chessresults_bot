@@ -60,4 +60,22 @@ describe Tracker, :db do
       expect(DB[:trackers][tracker_options]).to be_nil
     end
   end
+
+  describe '#list_trackers' do
+    before(:example) do
+      @tr_o = tracker_options.dup
+      @tr_o[:draw] = 3
+      @tr_o[:result] = 2
+      @tracker = {uid: 2, tnr: 2, snr: 4, draw: 0, result: 0}
+      DB[:trackers].insert(@tracker)
+    end
+
+    it 'lists all trackers' do
+      expect(Tracker.list_trackers).to eq([@tr_o, @tracker])
+    end
+
+    it 'filters list of trackers by uid' do
+      expect(Tracker.list_trackers(uid: 2)).to eq([@tracker])
+    end
+  end
 end

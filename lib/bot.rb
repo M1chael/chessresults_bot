@@ -28,7 +28,8 @@ class Bot
   def read(message)
     if message.respond_to?(:text)
       @uid = message.chat.id
-      trackers = DB[:trackers].where(uid: @uid).all
+      trackers = Tracker.list_trackers(uid: @uid)
+      # trackers = DB[:trackers].where(uid: @uid).all
       if message.text == '/start'
         send_message(text: STRINGS[:hello])
       elsif message.text == '/list'
@@ -78,7 +79,8 @@ class Bot
     begin
       Telegram::Bot::Client.run(@token, logger: @logger) do |telegram|
         @telegram = telegram
-        DB[:trackers].each do |tracker|
+        Tracker.list_trackers.each do |tracker|
+        # DB[:trackers].each do |tracker|
           upd_tracker = Tracker.new(tracker)
           finish_date = Date.parse(tournament_info(tracker[:tnr])[:finish_date])
           if Date.today > finish_date
