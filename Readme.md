@@ -55,7 +55,7 @@ result INTEGER
 );
 ```
 
-## chessresults_bot.rb
+### chessresults_bot.rb
 
 Запускается с одним из обязательных параметров:
 `--listen` — режим получения сообщений от пользователей; запускать и поддерживать работу в фоновом режиме можно, например, [с помощью Monit](https://github.com/M1chael/qb/wiki/Monit)
