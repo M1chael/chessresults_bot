@@ -1,0 +1,6 @@
+version: '2.0'
+services:
+  chessresults_bot:
+    container_name: chessresults_bot
+    build: .
+    restart: unless-stopped
