@@ -12,4 +12,3 @@ RUN bundle install
 USER guest
 
 CMD ["ruby", "bin/chessresults_bot.rb", "--listen"]
-#ENTRYPOINT ["sh", "-c", "sleep 2073600"]
