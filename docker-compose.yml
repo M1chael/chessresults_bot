@@ -4,3 +4,6 @@ services:
     container_name: chessresults_bot
     build: .
     restart: unless-stopped
+    volumes:
+      - ./assets:/app/assets
+      - ./logs:/app/logs

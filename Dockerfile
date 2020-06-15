@@ -6,9 +6,6 @@ WORKDIR /app
 
 COPY . /app
 
-RUN chown -R guest /app
-RUN bundle install
-
-USER guest
+RUN bundle install --without=test
 
 CMD ["ruby", "bin/chessresults_bot.rb", "--listen"]
