@@ -22,6 +22,8 @@ class Bot
       end
     rescue => error
       @logger.fatal(error)
+      sleep 60
+      retry
     end
   end
 
